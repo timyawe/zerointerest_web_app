@@ -1,0 +1,46 @@
+/*.side-bar, .user {
+					list-style-type:none;
+					padding: 5px;
+					margin: 5px 0px 0px 0px;
+	}*/
+	
+.side-list {
+	list-style-type:none;
+	/*margin: 12px 0px 0px 0px;*/
+}
+
+#user {
+		position: absolute; 
+		right: 0px; 
+		top: 0px; 
+		display: inline;
+}
+
+.user {
+		padding: 3px;
+		display: inline;
+		white-space:  nowrap;
+}
+
+.user li {
+		margin-left: 6px;
+}
+
+.user-welcome {
+	margin: 2px 2px 12px 2px;
+	padding-left: 5px;
+}
+
+.user-link a:link, .user-link a:visited {
+	padding: 0.3em 0.3em;
+	border-radius: 0px 0px 4px 4px;
+	border: 1px solid #52B2A0;/*#ccc;*/
+	text-decoration: none;
+	color: blue;
+}
+
+.user-link a:hover {
+	background-color: rgba(27,233,179,0.9);
+	color: white;
+	border-color: #111;
+}

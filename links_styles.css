@@ -1,0 +1,124 @@
+/* Table links */
+
+td>a:link, td>a:visited {
+	border: 1px solid green;
+	padding: 5px 10px;
+	border-radius: 5px;
+	text-decoration: none;
+	color: black;
+}
+
+td>a:hover not .del {
+	text-decoration: underline;
+	color: blue;
+	background-color: #52B2A0;
+	border: 1px solid gray;
+}
+
+.del:hover{
+	color: blue;
+	background-color: #52B2A0;
+	border: 1px solid gray;
+}
+/* Form links */
+
+form a {
+	/*background-color: #52B2A0;*/
+	padding: 9px 9px;
+	border-radius: 4px;
+	border: 1px solid #52B2A0;/*#ccc;*/
+	text-decoration: none;
+	color: black;
+}
+
+form a:hover {
+	background-color: rgba(27,233,179,0.9);
+	color: white;
+	border-color: #111;
+}
+
+/* Header links */
+
+.active-nav-link {
+	background-color: #52B2A0;/*#4BB4B9;*/
+	color: white;
+	text-decoration: underline;
+}
+
+#nav a:link, #nav a:visited {
+	padding: 7px;
+	display: inline-block;
+	margin-bottom: 2px;
+	text-decoration: none;
+	color: white;
+}
+
+#nav a:hover {
+	text-decoration: underline;
+	color: black;
+	background-color: #339966;
+}
+
+.active-nav-link:hover {
+	text-decoration: none;
+	background-color: #52B2A0;/*#4BB4B9;*/
+	color: white;
+}	
+
+/*.user li {
+	display: inline;
+	float: left;
+	color: red;
+}
+
+
+#header a:first-child {
+	color: red;
+}*/
+
+/* Sidebar links */
+
+.active-sidebar-link {
+	background-color: rgba(2,120,8,8);
+	color: white;
+	width: 100%;
+}
+
+.side-bar li a {
+	display: block;/* makes entire link clckable not just text */
+	text-decoration: none;
+	color: black;
+	padding: 10px 4px;
+	/*border-bottom: 1px solid black;*/
+}
+
+.side-bar li a:hover {
+	background-color: #00CC99; /*#339966;rgba(2,120,8,8);*/
+	color: white;
+}
+
+.side-bar li:last-child {
+	border-bottom: none;
+}
+
+.active-sidebar-link:hover {
+	background-color: rgba(2,120,8,8);
+	color: black;
+}
+
+.photos_back_link:link, .photos_back_link:visited {
+	position: fixed;
+	right: 0;
+	top: 18%;
+	padding: 12px 12px;
+	border-radius: 4px;
+	border: 1px solid #52B2A0;/*#ccc;*/
+	text-decoration: none;
+	color: black;
+}
+
+.photos_back_link:hover {
+	background-color: rgba(27,233,179,0.9);
+	color: white;
+	border-color: #111;
+}

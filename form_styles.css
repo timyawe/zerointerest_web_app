@@ -1,0 +1,286 @@
+.side_content {
+		width: 20%;
+		display: inline-block;
+		background-color: black;
+}
+
+.container {
+			background-color: #f2f2ff;
+			padding: 20px;
+			/*min-height: 100%;*/
+			box-sizing: border-box;
+			border-radius: 5px;
+			position: absolute;
+}
+
+.login_container {
+					width: 30%;
+					margin: auto;
+					background-color: /*#52B2A0;*/#4BB4B9;
+					text-align: center;
+					position: relative;
+					margin-top: 20%;
+					padding: 5px;
+					min-height: 30%;
+					border-radius: 5px;
+}
+
+/* Styling payment form */
+
+#payment_form_container {
+	background-color: #f2f2ff;
+	width: 90%;
+	margin: auto;
+	padding: 10px;
+	box-sizing: border-box;
+	border-radius: 3px;
+	margin-top: 10%;
+}
+
+#payment_form_container .col-25 {
+	width: 50%;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#payment_form_container .col-75 {
+	width: 50%;
+}
+
+#payment_form_container .col-75 input, #payment_form_container .col-75 select {
+	width: 100%;
+	outline: none;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	margin-top: 4px;
+	padding: 5px;
+}
+
+#payment_form_container input[type=submit] {
+	padding: 5px;
+	margin-top: 15px;
+	border-radius: 2px;
+}
+
+/* Styling change password form */
+#logout_container {
+					background-color: #f2f2ff;
+					position: relative;
+					padding: 15px;
+					margin: auto;
+					margin-top: 6%;
+					width: 30%;
+					/*margin-top: 0%;*/
+					box-sizing: border-box;
+					display: none;
+					text-align: center;
+					border-radius: 10px;
+					border: 2px solid cadetblue;
+}
+
+#logout_container .row {/*putting the labels on top of textfields*/
+						position: relative; 
+						float: left;
+}
+
+#logout_container .col-25, #logout_container .col-75 {
+								width: 100%; 
+}
+
+#logout_container input[type=text], #logout_container input[type=password] {
+							display: inline-block;
+							box-sizing: border-box;
+							padding: 7px;
+							border-radius: 4px;
+							border: 1px solid #ccc;
+}
+
+#logout_container h2 {
+					margin-top: 0;
+}
+
+.instalment_container {
+						width: 97%;
+						margin: auto;
+						margin-top: 4%;
+						border-radius: 3px;
+						background-color: #f2f2ff;
+						box-sizing: border-box;
+						position: relative;
+						padding: 10px;
+}
+
+/*.instalment_container h2 {
+							background-color: #4BB4B9;
+							padding: 10px;
+}*/
+
+.form {
+		box-sizing: border-box;
+		margin: auto;
+}
+
+.login-input {
+				border-radius: 4px;
+				border: 1px solid #ccc;
+				padding: 5px;
+}
+
+label {
+		display: inline;
+		padding: 7px 7px 7px 0;
+		box-sizing: inherit;
+		/*background-color: red;*/
+		/*font-family: Arial;
+		font-size: 14;*/
+}
+
+/* Input fields for main forms */
+.main-form {
+		width: 75%;
+		display: inline-block;
+		box-sizing: border-box;
+		padding: 7px;
+		border-radius: 4px;
+		border: 1px solid #ccc;
+		/*font-family: Arial;*/
+}
+
+input[type=submit], input[type=button]  {
+					/*background-color: #52B2A0;*/
+					padding: 9px 9px;
+					border-radius: 4px;
+					/*color: #ffffff;
+					font-family: calibri;
+					font-size: 14;*/
+					margin-top: 12px;
+					border: 1px solid #52B2A0;/*#ccc;*/
+					cursor: pointer;
+					outline: none;
+}					
+
+input[type=submit]:hover {
+	background-color: rgba(27,233,179,0.9);
+	color: white;
+	border-color: #111;
+}
+
+input[type=button]:hover {
+	background-color: rgba(204,1,1,1);
+	color: white;
+	border-color: #111;
+	
+}
+
+input[type=text], input[type=password] {
+	
+	box-sizing: border-box;
+  outline: none;
+}
+
+textarea {
+			border-radius: 2px;
+			width: 100%;
+			box-sizing: border-box;
+			padding: 5px;
+}
+
+.row:after {
+			content: "";
+			display: table;
+			clear: both;
+}
+
+.col-25 {
+			float: left;
+			width: 25%;
+			margin-top: 12px;
+			outline: none;
+}
+
+.col-75 {
+			float: left;
+			width: 75%;
+			margin-top: 6px;
+			outline: none;
+			
+}
+
+
+/* Styling loan details_view & loan details edit begining */
+#left {
+		width: 50%;
+		float:left;
+		position: relative;
+		display: inline-block;
+		box-sizing: border-box;
+		padding: 7px ;
+		/*background-color: yellow;*/
+}
+
+#right {
+		
+		float: left;
+		display: inline-block;
+		/*background-color: red;*/
+		position: relative;
+		width: 50%;		
+		box-sizing: border-box;
+		padding: 7px;
+}
+
+#right .col-25, #left .col-25 {
+				width: 50%
+}
+
+#right .col-75, #left .col-75 {
+				width: 50%
+}
+
+#loan-view-left .col-25, #loan-view-right .col-25 {
+	width: 50%;
+	/*color: red;*/
+}
+
+#loan-view-left .col-75, #loan-view-right .col-75 {
+	width: 50%;
+	/*color: red;*/
+	border-radius: 10px;
+}
+
+/* Styling loan details_view & loan details edit end */	
+
+.main-formloan {
+				box-sizing: border-box;
+				padding: 7px;
+				border-radius: 4px;
+				border: 1px solid #ccc;
+				width: 100%
+}
+
+.left {
+		/*float: left;
+		background-color: yellow;*/
+		box-sizing: border-box;
+		
+}
+
+.bottom {
+		float: left;
+		width: 100%;
+}
+
+.form-buttons {
+				float: left;
+}
+/*.25-left {
+			position: absolute;
+			float: left;
+			width: 25%;
+}
+
+.75-right {
+			float: left;
+			width: 75%;
+			background-color: red;
+}*/

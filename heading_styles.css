@@ -1,0 +1,14 @@
+#header>h1 {
+			text-align:center;
+			margin-top: 0px;
+			margin-bottom: 15px;
+}
+
+.form_heading {
+				background-color: #4BB4B9;
+				padding: 10px;
+				position: relative;
+				
+				top: 0px;
+				
+}

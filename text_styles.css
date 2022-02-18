@@ -1,0 +1,79 @@
+/* Styling for loandetails_view */
+
+		/* Tables */
+.instalment-table caption, .payment-table h2 {
+		font-family: "Segoe UI";
+		font-weight: normal; 
+		letter-spacing: 0.2em;
+}	
+
+#loan-view-form {
+	font-family: Calibri;
+}
+
+/* Styling Tables */
+
+table, form {
+	font-family: Calibri;
+}
+
+form a, input[type=submit] {
+	font-size: 12pt;
+	font-family: Calibri;
+}
+
+h1, h2 {
+	font-family: "Segoe UI";
+	letter-spacing: 0.08em;
+}
+
+.table_heading {
+	font-weight: normal;
+	font-size: 20pt;
+	padding-top: 8px;
+}
+
+.form_heading {
+	color: white;
+}
+
+#filter_icon {
+	font-size: 10pt;
+	padding-top: 10px;
+}
+
+#nav {
+	font-family: Cambria;/*"Times New Roman";*/
+	letter-spacing: 0.08em;
+	font-size: 11.5pt;
+}
+
+.side-bar {
+		font-family: Cambria;
+		letter-spacing: 0.05em;
+		font-size: 11pt;
+		white-space: nowrap;
+}
+
+.alert-response-error {
+	color: red;
+	font-family: "verdana";
+	font-size: 8pt
+}
+
+.alert-response-failure {
+	font-family: "Segoe UI";
+	font-weight: bold;
+}
+
+.alert-response-success, .alert-response-information {
+	color: blue;
+	font-weight: bold;
+	font-size: 14pt;
+	font-family: "Segoe UI";
+}
+
+.form-error {
+	color: red;
+	font-size: 15px;
+}

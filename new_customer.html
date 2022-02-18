@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<title>New Customer Form</title>
+		<script src="new_customer.js" type="text/javascript"></script>
+		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
+		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
+		<link href="page_styles.css" type="text/css" rel="stylesheet" />
+		<link href="form_styles.css" type="text/css" rel="stylesheet" />
+	</head>
+		<body>
+		
+			<!-- Begining of header section -->
+				<div id="header"> 
+					<h1>ZERO INTEREST FINANCE LIMITED</h1>
+					<div id="nav">
+					<a href="main_page.html">Home</a>
+					Customers Page
+					<a href="loans_page.html">Loans Page</a>
+					</div>
+				</div>
+			<!-- End of header section -->
+			
+			<!-- Begining of sidebar navigation -->
+				<div id="sidebarNav">
+				<ul class="side-bar">
+					<li class="side-list">Add Customer & Loan</li>
+					<li class="side-list"><a href="viewcustomers.php">View Customers List</a></li>
+					<li class="side-list"><a href="customer_report.php">Customer Report</a></li>
+				</ul>
+				</div>
+			<!-- End of sidebar navigation -->
+			
+			<!-- Begining of content section -->
+			
+				<div id="main_content">
+					<!-- Begining of main form section -->
+						<div id="formSection" class="container">
+							<form name="custfrm" id="NewCustomerForm" action="new_customer.php" method="post">
+								<div id="GeneralTab">
+									
+									<div class="row">
+									<div class="col-25" for="dj"><label>Date Joined:</label></div>
+									<div class="col-75"><input class="main-form" type="date" required="required" name="datejoined"/><br/><span id="errorDate"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Ref No:</label></div>
+									<div class="col-75"><input class="main-form" type="text" required="required" name="refNo"/><br/><span id="errorRefNo"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Customer Name:</label></div>
+									<div class="col-75"><input class="main-form" type="text" required="required" name="customername"/><br/><span id="errorName"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Marital Status:</label></div>
+									<div class="col-75"><select name="MarriageOptions">
+										<option value="Married">Married</option>
+										<option value="SIngle">Single</option>
+										<option value="Engaged">Enganged</option>
+										<option value="Widowed">Widowed</option>
+									</select></div>
+									</div>
+									
+								</div>
+								
+								<div id="ContactDetailsTab">
+									<div class="row">
+									<div class="col-25"><label>Primary Contact:</label></div>
+									<div class="col-75"><input class="main-form" type="text" required="required" name="pricontact" onblur="checkPhone1()"/><br/><span id="errorCont1"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Other Contact:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="othcontact" onblur="checkPhone2()"/><br/><span id="errorCont2"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Email:</label></div>
+									<div class="col-75"><input class="main-form" type="email" name="emailaddr" onblur="checkEmail()"/><br/><span id="errorEmail"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Facebook Name:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="fb_ac"/></div>
+									</div>
+								</div>
+								
+								<div id="LocationTab">
+									<div class="row">
+									<div class="col-25"><label>Residence:</label></div>
+									<div class="col-75"><input class="main-form" type="text" required="required" name="resd"/><br/><span id="errorResd"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Home Details:</label></div>
+									<div class="col-75"><select name="HomeDetails">
+										<option value="Home Owner">Home Owner</option>
+										<option value="Tenant">Tenant</option>
+										<option value="Other">Other</option>
+									</select><br/><span id="errorHome"></span></div>
+									</div>
+								</div>
+								
+								<div id="EmploymentDetailsTab">
+									<div class="row">
+									<div class="col-25"><label>Bank:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="bankname"/></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Bank A/C:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="bank_ac" onblur="checkBankAc()"/><br/><span id="errorBankA/c"></span>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Occupation Type</label></div>
+									<div class="col-75"><select name="JobDetails" multiple="multiple" >
+										<option value="Employed">Employed</option>
+										<option value="Business">Business</option>
+										<option value="Proffessional">Proffessional</option>
+									</select><br/><span>Hold down the CTRL key to choose more than one option</span><br/><span id="errorOcctype"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Job/Business Type:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="jobtype"/><br/><span id="errorJobtype"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Employer:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="employer"/><br/><span id="errorEmp"></span></div>
+									</div>
+									
+									<div class="row">
+									<div class="col-25"><label>Job/Business Location:</label></div>
+									<div class="col-75"><input class="main-form" type="text" name="job_loc"/><br/><span id="errorJobloc"></span></div>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="col-25"><label>Documents & Photos:</label></div>
+									<div class="col-75"><input type="file"/></div>
+									</div>	
+								
+								<div class="row" id="SubmitButton">
+									<input type="submit" value="Add Customer"/>
+								</div>
+							</form>
+						</div>
+					<!-- End of main form section -->
+				</div>
+			</div>
+			<!-- End of content section -->
+			
+			<div id="footer">
+				<p> "Today is my lucky day" </p>
+			</div>
+
+		</body>
+</html>
