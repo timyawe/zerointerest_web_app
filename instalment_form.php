@@ -157,7 +157,7 @@
 				
 				<p>
 				<label>Comment:</label>
-				<textarea name="comment"></textarea>
+				<textarea name="comment"><?php echo $comment; ?></textarea>
 				</p>
 				
 				<input type="submit" name="add" value="Add Instalment" title="Click to confirm new instalment" 

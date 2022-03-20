@@ -47,7 +47,7 @@
 	width: 50%;
 }
 
-#payment_form_container .col-75 input, #payment_form_container .col-75 select {
+#payment_form_container .col-75 input, #payment_form_container .col-75 select, #interaction_form .col-75 input, #interaction_form .col-75 select{
 	width: 100%;
 	outline: none;
 	border-radius: 3px;
@@ -146,7 +146,7 @@ label {
 		/*font-family: Arial;*/
 }
 
-input[type=submit], input[type=button]  {
+input[type=submit], input[type=button], #interact, #add, #edit  {
 					/*background-color: #52B2A0;*/
 					padding: 9px 9px;
 					border-radius: 4px;
@@ -159,7 +159,7 @@ input[type=submit], input[type=button]  {
 					outline: none;
 }					
 
-input[type=submit]:hover {
+input[type=submit]:hover, #add:hover, #edit:hover {
 	background-color: rgba(27,233,179,0.9);
 	color: white;
 	border-color: #111;
@@ -206,6 +206,10 @@ textarea {
 			
 }
 
+/*.form-error {
+	color: red;
+	font-size: 15px;
+}*/
 
 /* Styling loan details_view & loan details edit begining */
 #left {

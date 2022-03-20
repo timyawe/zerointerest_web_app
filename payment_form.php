@@ -5,6 +5,7 @@ include "dbconn.php";
 
 if (!isset($_SESSION['paymentID'])) {
 	$p_date = $p_type = $p_amount = $p_confmd = " ";
+	$inst_ID = $_REQUEST['instalment_ID'];
 } else {
 	$sql = "SELECT * FROM `Payment Details` WHERE Payment_ID =" . $_SESSION['paymentID'];
 	$sqlresult = mysqli_query($conn, $sql);
@@ -15,6 +16,8 @@ if (!isset($_SESSION['paymentID'])) {
 		$p_type = $row['PAYMENT_TYPE'];
 		$p_amount = number_format($row['PAID_AMOUNT']);
 		$p_confmd = $row['PAYMENT_CONFIRMED'];
+		$inst_ID = $row['InstalmentID'];
+		unset($_SESSION['paymentID']);
 	}
 }
 
@@ -61,6 +64,7 @@ if (!isset($_SESSION['paymentID'])) {
 			?>
 			<div id="payment_form_container">
 				<form method="POST" action="paymentdetails_handler.php">
+					<div><input type="text" name="inst_ID" value="<?php echo $inst_ID; ?>"></div>
 					<div class="row">
 					<div class="col-25"><label>Date:</label></div>
 					<div class="col-75"><input type="text" name="p_date" value="<?php echo $p_date; ?>"></div>

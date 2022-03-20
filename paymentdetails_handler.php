@@ -26,6 +26,7 @@ if (isset($_POST['add'])) {
 		$p_confmd = 0;
 	}
 	
+	$inst_ID = $_POST['inst_ID'];
 	
 	//insert data into database
 	$insertsql = "INSERT INTO `Payment Details` (LOAN_NO, 
@@ -39,7 +40,7 @@ if (isset($_POST['add'])) {
 													{$p_amount},
 													'{$p_type}',
 													'{$p_confmd}',
-													{$_SESSION['instalment_ID']})";
+													{$inst_ID})";
 		
 		if (mysqli_query($conn, $insertsql)) {
 			//Get last inserted record

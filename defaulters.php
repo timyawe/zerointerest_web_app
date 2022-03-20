@@ -69,7 +69,7 @@
 									<th>ELAPSED DAYS</th>
 									<th>PRINCIPAL</th>
 									<th>INTEREST</th>
-									<th>INSTALMENT BALANCE</th>
+									<!--<th>INSTALMENT BALANCE</th>-->
 									<th>PRINCIPAL & INTEREST</th>
 									<th>AMOUNT PAID</th>
 									<th>COMMENT</th>
@@ -94,7 +94,7 @@ echo $tablehead;
 							echo	"<td>".$row['ELAPSED_DAYS']."</td>";
 							echo	"<td class='loan_principal' style='text-align:right;'>".number_format($row['PRINCIPAL'])."</td>";
 							echo	"<td style='text-align:center;'>".$row['INTERST_RATE']."</td>";
-							echo	"<td style='text-align:right;'>".number_format($row['INSTALMENT_BALANCE'])."</td>";
+							echo	"<!--<td style='text-align:right;'>".number_format($row['INSTALMENT_BALANCE'])."</td>-->";
 							echo	"<td class='loan_principal&int' style='text-align:right;'>".number_format($row['FINAL_PRINCIPAL_&_INTEREST'])."</td>";
 							echo	"<td class='loan_amountpaid' style='text-align:right;'>".number_format($row['AMOUNT_PAID'])."</td>";
 							echo	"<td><div class='loan-comment-field'>".$row['COMMENT']."</div></td>";

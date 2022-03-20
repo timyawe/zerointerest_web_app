@@ -51,7 +51,7 @@ echo $tablehead;
 						$amountpayable = number_format($row['AmountPayable']);
 						$paidamount = number_format($row['PaidAmount']);
 						$amountdue = number_format($row['AmountDue']);
-						$_SESSION['instalment_ID'] = $row['Instalment_ID'];
+						//$_SESSION['instalment_ID'] = $row['Instalment_ID'];
 						
 					echo "<tr>";
 					echo 	"<td>".$row['Instalment_No']."</td>";
@@ -68,7 +68,7 @@ echo $tablehead;
 					echo 	"<td>".$row['Instalment_Status']."</td>";
 					echo 	"<td>".$row['Instalment_ClearedDate']."</td>";
 					echo 	"<td><a href='payment_form.php'
-					onclick=".'"'."window.open('payment_form.php','popup','width=360,height=300');
+					onclick=".'"'."window.open('payment_form.php?instalment_ID={$row['Instalment_ID']}','popup','width=360,height=300');
 					return false;".'"'.">Add Payment</a></td>";
 					echo 	"<td><a href='instalment_payments.php?instalment_ID={$row['Instalment_ID']}'>View Payments</a></td>";
 					echo "</tr>";

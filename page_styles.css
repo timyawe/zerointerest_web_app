@@ -23,8 +23,41 @@ body {
 			width: 100%;
 			padding-left: 2px;
 }
+/* Designing the modal */
+
+.modal	{
+	position: fixed;
+	z-index: 100;
+	overflow: auto;
+	height: 100%;
+	width: 100%;
+	left: 0;
+	top: 0;
+	display: none;
+	background-color: rgba(0,0,0,0.4); /* Creates a backdrop */
+
+	
+}
+
+.modal-content{
+	padding: 15px;
+	background-color: #f2f2ff;
+	margin: 5% auto; /* 15% from the top and centered */
+	border: 1px solid;
+	border-radius: 8px;
+	width: 50%;
+	text-align: center;
+	animation-name: slideintop;
+	animation-duration: 0.5s;
+}
+
+@keyframes slideintop{
+	from{top: -500px; opacity:0}
+	to{top:0; opacity: 1}
+}
 
 #nav {
+	/*margin-top: 5px;*/
 	background-color: #292929;
 	position: fixed;
 	z-index: 15;

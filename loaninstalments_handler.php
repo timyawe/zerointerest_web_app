@@ -138,7 +138,7 @@ if (isset($_POST['add'])) {
 }
 
 
-//Checks wether user has clicked the 'edit' button on instalemts form
+//Checks wether user has clicked the 'edit' button on instalments form
 if (isset($_POST['edit'])) {
 	
 	//find the currently edited record
@@ -215,8 +215,11 @@ if (isset($_POST['edit'])) {
 				be rescheduled at this time because it has no payments.</span>";
 			}
 		} else {
-			$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot 
-				be rescheduled at this time because it has no payments.</span>";
+			/*$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot 
+				be rescheduled at this time because it has no payments.</span>";*/
+			if($_POST['status'] != $status){
+				$editedfields["Instalment_Status"] = $_POST['status'];
+			}
 		}
 		break;
 		
@@ -227,6 +230,10 @@ if (isset($_POST['edit'])) {
 		if ($amountduerow['AmountDue'] > 0 ) {
 			$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot be cleared 
 				at this time because it has amount due.</span>";
+		}else{
+			if($_POST['status'] != $status){
+				$editedfields["Instalment_Status"] = $_POST['status'];
+			}
 		}
 		break;
 		

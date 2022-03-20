@@ -99,10 +99,6 @@ if (isset($_POST['add'])){
 	
 		$addedfields[] = "`CustomerNo`";
 		$addedvalues[] = $_SESSION['customer_no'];
-		
-	
-	$datecleared = $_POST['datecleared'];
-	$clearedby = $_POST['clearedby'];
 
 //echo "(".implode(",",$addedfields).")" . "VALUES" . "(".implode(",",$addedvalues).")" ;
 	//Check if customer session is set to indicate that a particular customer has been selected
@@ -164,6 +160,7 @@ if (isset($_POST['edit'])) {
 		$status = $editloan_row['STATUS'];
 		$cleareddate = $editloan_row['DATE_CLEARED'];
 		$proInstmts = $editloan_row['PROVISIONAL_INSTALMENTS?'];
+		$clearedby = $editloan_row['CLEARED_BY'];
 		
 	}
 	
@@ -233,6 +230,9 @@ if (isset($_POST['edit'])) {
 		$editedfields["`PROVISIONAL_INSTALMENTS?`"] = $proInstmts2;
 	}
 	
+	if($clearedby != $_POST['clearedby']){
+		$editedfields["CLEARED_BY"] = $_POST['clearedby'];
+	}
 		
 	if (count($editedfields) > 0 ) {
 		foreach($editedfields as $fieldname => $value) {
@@ -258,6 +258,8 @@ if (isset($_POST['edit'])) {
 		$_SESSION['noedit_loan'] = 1;
 		header ("Location: loandetails_edit.php");
 	}
+	
+	
 }
 	
 	
