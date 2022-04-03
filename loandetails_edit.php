@@ -124,7 +124,7 @@
 		</style>
 	</head>
 	
-	<body>
+	<body onload="removeProvElememt()">
 		<div id="editModal" class="modal">
 			<div class="modal-content">
 				
@@ -222,7 +222,7 @@
 									<div class="row">
 									<div class="col-25"><label>Period in Days:</label></div>
 									<div class="col-75"><input class="main-formloan" style="width:42%" type="text" value="<?php echo $prov_period; ?>" name="prov_period" onblur="checkPeriodInDays(), checkProvPeriod()" />
-									<label>of</label>
+									<label id="prov_label">of</label>
 									<input class="main-formloan" style="width:42%" type="text" value="<?php echo $final_period; ?>"
 									required="required" name="final_period" onblur="setPeriod()" /><br/><span class="form-error" id="errordaysperiod"></span></div>
 									</div>
@@ -629,6 +629,27 @@
 				}).then(function(data){
 					document.getElementById("interactions-content").innerHTML = data;
 				});
+			}
+		</script>
+		
+		<script>
+			var status_el = document.getElementsByName("status")[0];
+			
+			status_el.onchange = function(){
+				if(status_el.value == "Cleared"){
+					document.getElementsByName("clearedby")[0].value = user;
+				}else{
+					document.getElementsByName("clearedby")[0].value = "";
+				}
+			}
+			
+			var prov_value = <?php if($prov_period == ""){echo '""';}else{echo $prov_period;} ?>;
+			
+			function removeProvElememt(){
+				if(prov_value == ""){
+					document.getElementsByName("prov_period")[0].style.display = "none";
+					document.getElementById("prov_label").style.display = "none";
+				}
 			}
 		</script>
 	</body>

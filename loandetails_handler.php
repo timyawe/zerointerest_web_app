@@ -147,18 +147,18 @@ if (isset($_POST['edit'])) {
 	
 	if (mysqli_num_rows($editselectresult) > 0 ) {
 		$editloan_row = mysqli_fetch_assoc($editselectresult);
-		$startdate = $editloan_row['START_DATE'];
+		$startdate = date("d-m-Y", strtotime($editloan_row['START_DATE']));
 		$loanRefNo = $editloan_row['LOAN_REF_NO'];
 		$period = $editloan_row['PERIOD'];
 		$prov_period = $editloan_row['PROVISIONAL_PERIOD'];
 		$final_period = $editloan_row['FINAL_PERIOD'];
-		$enddate = $editloan_row['FINAL_PAYMENT_DATE'];
-		$principal = $editloan_row['PRINCIPAL'];
+		$enddate = date("d-m-Y", strtotime($editloan_row['FINAL_PAYMENT_DATE']));
+		$principal = number_format($editloan_row['PRINCIPAL']);
 		$interest = $editloan_row['INTERST_RATE'];
-		$f_prin_int = $editloan_row['FINAL_PRINCIPAL_&_INTEREST'];
-		$comment = $editloan_row['COMMENT'];
+		$f_prin_int = number_format($editloan_row['FINAL_PRINCIPAL_&_INTEREST']);
+		$comment = strip_tags($editloan_row['COMMENT']);
 		$status = $editloan_row['STATUS'];
-		$cleareddate = $editloan_row['DATE_CLEARED'];
+		$cleareddate = date("d-m-Y", strtotime($editloan_row['DATE_CLEARED']));
 		$proInstmts = $editloan_row['PROVISIONAL_INSTALMENTS?'];
 		$clearedby = $editloan_row['CLEARED_BY'];
 		
