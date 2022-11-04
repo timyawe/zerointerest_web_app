@@ -3,11 +3,18 @@
 
 	//connect to database
 	require "dbconn.php";
+	$custsql = "SELECT concat(`SUR_NAME`, ' ', `FIRST_NAME`) AS CustomerName, `PRIMARY_CONTACT` FROM `Customer Details Table` WHERE CUSTOMER_NO =".$_SESSION['customer_no'];
+	$custsqlresult = mysqli_query($conn, $custsql);
+	$cust_row = mysqli_fetch_assoc($custsqlresult);
+	$cust_name = $cust_row['CustomerName'];
+	$cust_cont = $cust_row['PRIMARY_CONTACT'];
+	
 	
 	if (!isset($_SESSION['loan_no'])) {
 		$startdate = date("d-m-Y");
+		$status = "On-going";
 		$loanRefNo = $prov_period = $final_period = $periodInMonths = $FinalPaymentDate = $clearedby = "";
-		$principal = $interestrate = $f_prin_int = $datecleared = $comment = $status = $proInstmts = "";
+		$principal = $interestrate = $f_prin_int = $datecleared = $comment = $proInstmts = "";
 	}
 	GLOBAL $FinalPaymentDate, $datecleared; 
 	if (isset($_SESSION['loan_no'])) {
@@ -65,11 +72,13 @@
 			}
 
 			function setFinalDate() {
-				<?php echo "alert('Freaky');"; ?>
+				<?php /*echo "alert('Freaky');";*/ ?>
 			}
 		</script>
 		<!--<script src="new_customer.js" type="text/javascript"></script>-->
+		<script src="assets/js/jquery-3.6.0.min.js"></script>
 		<script src="loanvalidate.js" type="text/javascript"></script>
+		<script src="table_filters.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
 		<link href="page_styles.css" type="text/css" rel="stylesheet" />
@@ -77,10 +86,19 @@
 		<link href="links_styles.css" type="text/css" rel="stylesheet" />
 		<link href="text_styles.css" type="text/css" rel="stylesheet" />
 		<style>
-		/*hide the interactions div by default*/
-			#interactions-content{
-				display: none;
+		/* Styling the Customer Label */
+			.cust_lbl{
+				font-weight: bold;
+				font-family: Calibri;
+				font-size: 1.5em;
+				letter-spacing: 0.03em;
 			}
+			
+			
+		/*hide the interactions div by default*/
+			/*#interactions-content .tab-content :not(:first-child){
+				display: none;
+			}*/
 		
 		.form-tabs-container{
 			border: 1px solid #ccc;
@@ -95,7 +113,7 @@
 			cursor: pointer;
 			outline: none;
 			transition: 0.3s;
-			width: 50%;
+			width: 33.3%;
 			
 		}
 		
@@ -121,10 +139,11 @@
 			from {opacity: 0;}
 			to {opacity: 1;}
 		}
+		
 		</style>
 	</head>
 	
-	<body onload="removeProvElememt()">
+	<body onload="removeProvElememt(), highlight_confirmed_payments()">
 		<div id="editModal" class="modal">
 			<div class="modal-content">
 				
@@ -135,206 +154,189 @@
 					<h1>ZERO INTEREST FINANCE LIMITED</h1>
 					<div id="nav">
 					<a href="main_page.php">Home</a>
-					<a href="customers_page.php">Customers Page</a>
-					<a class="active-nav-link" href="#">Loans Page</a>
+					<a href="customers_page.php">Customers</a>
+					<a href="reports.php">Reports</a>
+					<a href="">Account</a>
+					<!--<a class="active-nav-link" href="#">Loans Page</a>-->
 					</div>
 			
 			</div>
 		<!-- End of header section -->
 		
-		<!-- Begining of sidebar Navigation section -->
-			<div id="SidebarNav">
-				<ul class="side-bar">
-				<?php 
-					if (isset($_SESSION['loan_no'])) {
-						echo "<li class='side-list'><a class='active-sidebar-link' href='#'>Edit Loan</a></li>";
-					} else {
-						echo "<li class='side-list'><a class='active-sidebar-link' href='#'>Add Loan</a></li>";
-					}
-				?>
-					<li class="side-list"><a href="viewloans.php">View Loans</a></li>
-					<li class="side-list"><a href="defaulters.php">Defaulters</a></li>
-					<li class="side-list"><a href="on-goingloans.php">On-going Loans</a></li>
-					<li class="side-list"><a href="clearedloans.php">Cleared Loans</a></li>
-					<li class="side-list"><a href="payments_list.php">Loan Payments</a></li>
-					<li class="side-list"><a href="defaulters_report.php">Defaulters Report</a></li>
-					<li class="side-list"><a href="clearedloans_report.php">Cleared Loans Report</a></li>
-				</ul>
-			
-			</div>
-		<!-- End of sidebar Navigation section -->
 		
 		<!-- Begining of Main form section -->
 		<div class="main_content">
-			<div id="LoanFormSection" class="container">
-			<h2 class="form_heading">Loan Details</h2>
-			<?php 
-			
-				if (isset($_SESSION['add_loan'])) {
-					echo "<span class='alert-response-success'>Loan Added</span>";
-					unset($_SESSION['add_loan']);
-				}
+			<div id="content_container">
+				<div id="LoanFormSection" class="container">
+				<h2 class="form_heading">Loan Details</h2>
+				<?php 
 				
-				if (isset($_SESSION['noadd_loan'])) {
-					echo "<span class='alert-response-error'>Alert: Sorry, the record was not added, please try again. <br/> 
-							Contact Administrator if issue persists. ". $_SESSION['noadd_loan']. "</span>";
-					unset($_SESSION['noadd_loan']);
-				}
-				
-				if (isset($_SESSION['edit_loan'])) {
-					echo "<span class='alert-response-success'>Loan Edited</span>";
-					unset($_SESSION['edit_loan']);
-				}
-				
-				if (isset($_SESSION['noedit_loan'])) {
-					echo "<span class='alert-response-failure'>No field was edited</span>";
-					unset($_SESSION['noedit_loan']);
-				}
-				
-				if (isset($_SESSION['all_instalments_added'])) {
-					echo $_SESSION['all_instalments_added'];
-					unset($_SESSION['all_instalments_added']);
-				}
-			?>
-				<div class="form-content-container">
-					<div class="form-tabs-container">
-						<button id="loanDetails" class="tab-links" onclick="openTab(event, 'loan-details-content')">Loan Details</button>
-						<button id="loanInteractions" class="tab-links" onclick="openTab(event, 'interactions-content');injectInInteractions()">Interactions</button>
-					</div>
-					<div class="tab-content-container">
-						<div id="loan-details-content" class="tab-content">
-							<form name="loanform" id="NewLoanForm" action="loandetails_handler.php" method="post" onsubmit="return validateform()">
-								<!--<p> -->
-								<!--<label>Loan No:</label> -->
-								<!--<input type="text" required="required"/> -->
-								<!--</p> -->
-								
-								<div id="left">
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Start Date:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $startdate; ?>" required="required" name="startdate" onblur="validateform()"/>
-									<br/><span class="form-error" id="errorSDate"></span></div>
-									</div>
-									</div>
-								
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Period in Days:</label></div>
-									<div class="col-75"><input class="main-formloan" style="width:42%" type="text" value="<?php echo $prov_period; ?>" name="prov_period" onblur="checkPeriodInDays(), checkProvPeriod()" />
-									<label id="prov_label">of</label>
-									<input class="main-formloan" style="width:42%" type="text" value="<?php echo $final_period; ?>"
-									required="required" name="final_period" onblur="setPeriod()" /><br/><span class="form-error" id="errordaysperiod"></span></div>
-									</div>
-									</div>
-								
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Period in Months:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $periodInMonths; ?>"	required="required" name="periodInMonths"/></div>
-									</div>
-									</div>
-								
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Final Payment Date:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $FinalPaymentDate; ?>" name="FinalPaymentDate" onblur="setFinalDate()" />
-									<br/><span class="form-error" id="errorEDate"></span></div>
-									</div>
-									</div>
-								
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Status</label></div>
-									<div class="col-75"><select style="width: 100%" class="main-formloan" name="status">
-										<option value="On-going" <?php if($status == "On-going") { echo "selected";}?>>On-going</option>
-										<option value="Defaulting" <?php if($status == "Defaulting") { echo "selected";}?>>Defaulting</option>
-										<option value="Cleared" <?php if($status == "Cleared") { echo "selected";}?>>Cleared</option>
-									</select></div>
-									</div>
-									</div>
-									
-									<div class="left">
-									<div class="row">
-									<div class="col-25"><label>Cleared By:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $clearedby; ?>" name="clearedby"
-									<?php if (!isset($_SESSION['loan_no'])) { echo "disabled"; } ?>/></div>
-									</div>
-									</div>
-									
-								</div>
-								
-								<div id="right">
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Loan Ref No:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $loanRefNo; ?>" name="loanRefNo"/>
-									<br/><span class="form-error" id="errorRefno"></span></div>
-									</div>
-									</div>
-									
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Principal:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $principal; ?>" required="required" name="principal" onblur="validateform(), setFinalPrincInt()"/>
-									<br/><span class="form-error" id="errorPrincipal"></span></div>
-									</div>
-									</div>
-									
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Interest Rate:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $interestrate; ?>" required="required" name="interestrate" onblur="setFinalPrincInt()"/></div>
-									</div>
-									</div>
-								
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Final Principal & Interest:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $f_prin_int; ?>" required="required" name="f_prin_int"/>
-									<br/><span class="form-error" id="errorPrinInt"></span></div>
-									</div>
-									</div>
-								
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Provisional Instalments:</label></div>
-									<input style="float: none" type="checkbox" name="proInstmts" value="Yes" 
-									<?php if ($proInstmts == 1){ echo "checked"; } ?> />
-									</div>
-									</div>
-								
-									<div class="right">
-									<div class="row">
-									<div class="col-25"><label>Date Cleared:</label></div>
-									<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $datecleared; ?>" name="datecleared"
-									<?php if (!isset($_SESSION['loan_no'])) { echo "disabled"; } ?>/></div>
-									</div>
-									</div>
-									
-								</div>
-								
-								<div class="bottom">
-								<div class="row">
-								<div class="25-left"><label>Comment:</label></div>
-								<div class="75-right"><textarea name="comment" rows="8"><?php echo $comment ?></textarea></div>
-								</div>
-								</div>
-								
-								
-								<div class="form-buttons">
-								<div class="row">
-								<input type="submit" value="Add Loan" name="add" title="Click to confirm new loan details" <?php if(isset($_SESSION['loan_no'])) {echo "disabled"; } ?> />
-								<input type="submit" value="Save Changes" name="edit" title="Click to confirm changes made to the loan details" <?php if(!isset($_SESSION['loan_no'])){ echo "disabled"; } ?> />
-								<?php if (isset($_SESSION['loan_no'])) 
-								{ echo "<a class='form-link' href='addinstalmentdecision.php?loan_no={$_SESSION['loan_no']}&principal=$principal&loan_startdate=$startdate&loan_enddate=$FinalPaymentDate'>Add Instalment</a>"; } ?>
-								<?php if (isset($_SESSION['loan_no'])) { echo "<a class='form-link' href='loan_instalments.php'>View Instalments</a>"; } ?>
-								<button type="button" id="interact">Add Interaction</button>
-								</div>
-								</div> 
-							</form>
+					if (isset($_SESSION['add_loan'])) {
+						echo "<span class='alert-response-success'>Loan and Instalment Added</span>";
+						unset($_SESSION['add_loan']);
+					}
+					
+					if (isset($_SESSION['noadd_loan'])) {
+						echo "<span class='alert-response-error'>Alert: Sorry, the record was not added, please try again. <br/> 
+								Contact Administrator if issue persists. ". $_SESSION['noadd_loan']. "</span>";
+						unset($_SESSION['noadd_loan']);
+					}
+					
+					if (isset($_SESSION['edit_loan'])) {
+						echo "<span class='alert-response-success'>Loan Edited</span>";
+						unset($_SESSION['edit_loan']);
+					}
+					
+					if (isset($_SESSION['noedit_loan'])) {
+						echo "<span class='alert-response-failure'>No field was edited</span>";
+						unset($_SESSION['noedit_loan']);
+					}
+					
+					if (isset($_SESSION['all_instalments_added'])) {
+						echo $_SESSION['all_instalments_added'];
+						unset($_SESSION['all_instalments_added']);
+					}
+				?>
+					<div class="form-content-container">
+						<div>
+							<p style="margin-bottom: 0px" class="cust_lbl">Customer Name: <?php echo $cust_name; ?></p>
+							<p style="margin-top: 0px" class="cust_lbl">Phone Number: <?php echo $cust_cont; ?></p>
 						</div>
-						<div id="interactions-content" class="tab-content">This is interactions</div>
+						<div class="form-tabs-container">
+							<button id="loanDetails" class="tab-links" onclick="openTab(event, 'loan-details-content')">Loan Details</button>
+							<button id="loanInstalments" class="tab-links" onclick="openTab(event, 'instalments-content');injectInInstalments()" <?php if(!isset($_SESSION['loan_no'])){echo "hidden";} ?>>Instalments</button>
+							<button id="loanInteractions" class="tab-links" onclick="openTab(event, 'interactions-content');injectInInteractions()" <?php if(!isset($_SESSION['loan_no'])){echo "hidden";} ?>>Interactions</button>
+						</div>
+						<div class="tab-content-container">
+							<div id="loan-details-content" class="tab-content">
+								<form name="loanform" id="NewLoanForm" action="loandetails_handler.php" method="post" onsubmit="return validateform()">
+									<!--<p> -->
+									<!--<label>Loan No:</label> -->
+									<!--<input type="text" required="required"/> -->
+									<!--</p> -->
+									
+									<div id="left">
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Start Date:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $startdate; ?>" required="required" name="startdate" id="st_dt" onblur="validateform()"/>
+										<br/><span class="form-error" id="errorSDate"></span></div>
+										</div>
+										</div>
+									
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Period in Days:</label></div>
+										<div class="col-75"><input class="main-formloan" style="width:42%" type="text" value="<?php echo $prov_period; ?>" name="prov_period" onblur="checkPeriodInDays(), checkProvPeriod()" />
+										<label id="prov_label">of</label>
+										<input class="main-formloan" style="width:42%" type="number" value="<?php echo $final_period; ?>"
+										required="required" name="final_period" onblur="setPeriod()" /><br/><span class="form-error" id="errordaysperiod"></span></div>
+										</div>
+										</div>
+									
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Period in Months:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $periodInMonths; ?>"	required="required" name="periodInMonths"/></div>
+										</div>
+										</div>
+									
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Final Payment Date:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $FinalPaymentDate; ?>" name="FinalPaymentDate" onblur="setFinalDate()" readonly />
+										<br/><span class="form-error" id="errorEDate"></span></div>
+										</div>
+										</div>
+									
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Status</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $status; ?>" name="status" readonly /></div>
+										</div>
+										</div>
+										
+										<div class="left">
+										<div class="row">
+										<div class="col-25"><label>Cleared By:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $clearedby; ?>" name="clearedby"
+										<?php if (!isset($_SESSION['loan_no'])) { echo "disabled"; } ?>/></div>
+										</div>
+										</div>
+										
+									</div>
+									
+									<div id="right">
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Loan Ref No:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $loanRefNo; ?>" name="loanRefNo"/>
+										<br/><span class="form-error" id="errorRefno"></span></div>
+										</div>
+										</div>
+										
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Principal:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $principal; ?>" required="required" id="princ" name="principal" onblur="validateform(), setFinalPrincInt()"/>
+										<br/><span class="form-error" id="errorPrincipal"></span></div>
+										</div>
+										</div>
+										
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Interest Rate:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $interestrate; ?>" required="required" name="interestrate" onblur="setFinalPrincInt()"/></div>
+										</div>
+										</div>
+									
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Final Principal & Interest:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $f_prin_int; ?>" required="required" name="f_prin_int"/>
+										<br/><span class="form-error" id="errorPrinInt"></span></div>
+										</div>
+										</div>
+									
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Provisional Instalments:</label></div>
+										<input style="float: none" type="checkbox" name="proInstmts" value="Yes" 
+										<?php if ($proInstmts == 1){ echo "checked"; } ?> />
+										</div>
+										</div>
+									
+										<div class="right">
+										<div class="row">
+										<div class="col-25"><label>Date Cleared:</label></div>
+										<div class="col-75"><input class="main-formloan" type="text" value="<?php echo $datecleared; ?>" name="datecleared"
+										<?php if (!isset($_SESSION['loan_no'])) { echo "disabled"; } ?>/></div>
+										</div>
+										</div>
+										
+									</div>
+									
+									<!-- Comment section removed as residue from old code -->
+									<!--<div class="bottom">
+									<div class="row">
+									<div class="25-left"><label>Comment:</label></div>
+									<div class="75-right"><textarea name="comment" rows="8"><?php echo $comment ?></textarea></div>
+									</div>
+									</div>-->
+									
+									
+									<div class="form-buttons">
+										<div class="row">
+											<input type="submit" value="Add Loan" name="add" title="Click to confirm new loan details" <?php if(isset($_SESSION['loan_no'])) {echo "hidden"; } ?> />
+											<!--<input type="submit" value="Save Changes" name="edit" title="Click to confirm changes made to the loan details" <?php if(!isset($_SESSION['loan_no'])){ echo "disabled"; } ?> />-->
+											<button type="button" id="interact" <?php if(!isset($_SESSION['loan_no'])){ echo "hidden"; } ?>>Add Interaction</button>
+										</div>
+									</div> 
+								</form>
+							</div>
+							<div id="instalments-content" class="tab-content"></div>
+							<div id="interactions-content" class="tab-content"></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -351,6 +353,9 @@
 			var content = <?php echo "'<h2>Nice</h2>'"; ?>;
 			var loanNo = <?php echo $_SESSION['loan_no']; ?>;
 			var user = <?php echo "'".$_SESSION['userlogin']."'"; ?>;
+			var principal = <?php echo "'".$principal."'"; ?>;
+			var startdate = <?php echo "'".$startdate."'"; ?>;
+			var end_date = document.getElementsByName("FinalPaymentDate");
 				
 			interact_btn.onclick = function(){
 				interact_box.style.display = "block";
@@ -630,6 +635,14 @@
 					document.getElementById("interactions-content").innerHTML = data;
 				});
 			}
+			
+			function injectInInstalments(){
+				fetch("loan_instalments.php?loanNo=" + loanNo).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("instalments-content").innerHTML = data;
+				});
+			}
 		</script>
 		
 		<script>
@@ -650,6 +663,169 @@
 					document.getElementsByName("prov_period")[0].style.display = "none";
 					document.getElementById("prov_label").style.display = "none";
 				}
+			}
+			
+			
+			function inject_inst_Form(){
+				fetch("addinstalmentdecision.php?loanNo=" + loanNo +"&principal=" + principal +"&loan_startdate=" + startdate +"&loan_enddate=" + end_date).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				//alert("Okays");
+			}
+			
+			function inject_inst_tabledata(){
+				fetch("loan_instalments.php").then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+			}
+			
+			function addInstalment(){
+				var inst_add = 1;
+				var inst_startdate = document.getElementsByName("inst_startdate")[0].value;
+				var inst_period = document.getElementsByName("inst_period")[0].value;
+				var inst_enddate = document.getElementsByName("inst_enddate")[0].value;
+				var inst_status = document.getElementsByName("inst_status")[0].value;
+				var inst_principal = document.getElementsByName("instalmentprincipal")[0].value;
+				var inst_comment = document.getElementsByName("inst_comment")[0].value;
+				var inst_type = document.getElementsByName("instalmenttype")[0].value;
+				
+				const inst_form_values = {"inst_add":inst_add, "inst_startdate":inst_startdate, "inst_period":inst_period, "inst_enddate":inst_enddate, "inst_status":inst_status, "inst_principal":inst_principal, "inst_comment":inst_comment, "inst_type":inst_type};
+				
+				fetch("loaninstalments_handler.php",{
+					method: "POST",
+					body: JSON.stringify(inst_form_values)
+				}).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				
+			}
+			
+			function statusChng(){
+				//alert(document.getElementsByName("inst_status")[0].value);
+			}
+			
+			function editInstalment(){
+				var inst_edit = 1;
+				var inst_startdate = document.getElementsByName("inst_startdate")[0].value;
+				var inst_period = document.getElementsByName("inst_period")[0].value;
+				var inst_enddate = document.getElementsByName("inst_enddate")[0].value;
+				var inst_status = document.getElementsByName("inst_status")[0].value;
+				var inst_principal = document.getElementsByName("instalmentprincipal")[0].value;
+				var inst_comment = document.getElementsByName("inst_comment")[0].value;
+				var inst_type = document.getElementsByName("instalmenttype")[0].value;
+				var inst_cleareddate = document.getElementsByName("inst_cleareddate")[0].value;
+				var inst_penalty = document.getElementsByName("penalty")[0].value;
+				
+				const inst_form_values = {"inst_edit":inst_edit, "inst_startdate":inst_startdate, "inst_period":inst_period, "inst_enddate":inst_enddate, "inst_status":inst_status, "inst_principal":inst_principal, "inst_comment":inst_comment, "inst_type":inst_type, "inst_cleareddate":inst_cleareddate, "inst_penalty":inst_penalty};
+				
+				fetch("loaninstalments_handler.php",{
+					method: "POST",
+					body: JSON.stringify(inst_form_values)
+				}).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+			}
+			
+			function inject_new_payment_form(btn){
+				_row = $(btn).parents("tr");
+				var col = _row.children("td");
+				var val = $(col[0]).text();
+				var new_pymt = 1;
+				
+				fetch("payment_form.php?instalment_ID=" + val + "&new_pymt=" + new_pymt).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				
+				//alert(val);
+			}
+			
+			function addPayment(){
+				var pymt_add = 1;
+				var inst_id = document.getElementsByName("inst_ID")[0].value;
+				var p_date = document.getElementsByName("p_date")[0].value;
+				var p_type = document.getElementsByName("p_type")[0].value;
+				var p_amount = document.getElementsByName("p_amount")[0].value;
+				var p_confmd = document.getElementsByName("p_confmd")[0].value;
+				
+				const pymt_form_values = {"pymt_add":pymt_add, "inst_id":inst_id, "p_date":p_date, "p_type":p_type, "p_amount":p_amount, "p_confmd":p_confmd};
+				
+				fetch("paymentdetails_handler.php", {
+					method: "POST",
+					body: JSON.stringify(pymt_form_values)
+				}).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				
+			}
+			
+			function editPayment(){
+				var pymt_edit = 1;
+				var inst_id = document.getElementsByName("inst_ID")[0].value;
+				var p_date = document.getElementsByName("p_date")[0].value;
+				var p_type = document.getElementsByName("p_type")[0].value;
+				var p_amount = document.getElementsByName("p_amount")[0].value;
+				var p_confmd = document.getElementsByName("p_confmd")[0].value;
+				
+				const pymt_form_values = {"pymt_edit":pymt_edit, "inst_id":inst_id, "p_date":p_date, "p_type":p_type, "p_amount":p_amount, "p_confmd":p_confmd};
+				
+				fetch("paymentdetails_handler.php", {
+					method: "POST",
+					body: JSON.stringify(pymt_form_values)
+				}).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+			}
+			
+			function edit_inst(btn){
+				_row = $(btn).parents("tr");
+				var col = _row.children("td");
+				var val = $(col[0]).text();
+				
+				fetch("loaninstalments_handler.php?instalment_ID=" + val).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+			}
+			
+			function view_inst_pymts(btn){
+				var row = document.getElementsByTagName("tr")[1];
+				var col = row.getElementsByTagName("td")[0];
+				var val = col.innerHTML;
+				
+				fetch("instalment_payments.php?instalment_ID=" + val).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				
+			}
+			
+			function inject_pymt_edit_form(btn){
+				_row = $(btn).parents("tr");
+				var col = _row.children("td");
+				var val = $(col[0]).text();
+				
+				fetch("paymentdetails_handler.php?payment_ID=" + val).then(function(response){
+					return response.text();
+				}).then(function(data){
+					document.getElementById("inst_content").innerHTML = data;
+				});
+				
 			}
 		</script>
 	</body>

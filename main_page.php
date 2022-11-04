@@ -1,10 +1,11 @@
 <?php include "login_session.inc"; 
 unset($_SESSION['customer_no']);
 
-if (isset($_POST['chgpwd'])) {
-	//connect to database
+//connect to database
 	require "dbconn.php";
 
+if (isset($_POST['chgpwd'])) {
+	
 	$updatesql = "UPDATE Users SET Password =" ."'".$_POST['cfmpwd']."'" . "WHERE Username =". "'".$_POST['username']."'";
 	
 	if (mysqli_query($conn, $updatesql)) {
@@ -19,10 +20,11 @@ if (isset($_POST['chgpwd'])) {
 	}
 }
 ?>
+<!doctype html>
 <html>
 	<head>
 		<title>Home</title>
-		<meta name="viewport" content="width=device-width initial-scale=1.0"/>
+		<!--<meta name="viewport" content="width=device-width initial-scale=1.0"/>-->
 		<script src="popup_windows.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
@@ -105,53 +107,39 @@ STYLE;
 					<h1>ZERO INTEREST FINANCE LIMITED</h1>
 					
 					<div id="nav">
-					<a class="active-nav-link" href="#">Home</a>
-					<a href="customers_page.php">Customers Page</a>
-					<a href="loans_page.html">Loans Page</a>
+					<a class="active-nav-link" href="">Home</a>
+					<a href="customers_page.php">Customers</a>
+					<a href="reports.php">Reports</a>
+					<a href="">FollowUps</a>
+					<a href="">Account</a>
+					<!--<a href="loans_page.html">Loans Page</a>-->
 					</div>
 					
 					<div id="user">
-					<p class="user-welcome">Welcome <?php echo $_SESSION["userlogin"]; ?></p>
-						<ul class="user">
-							<li class="user-link"><a href="#" onclick="openChangePassword(); return false;"
-							>Change Password</a></li>
-							<li class="user-link"><a href="logout.php">LogOut</a></li>
-						</ul>
+						<p class="user-welcome">Welcome <?php echo $_SESSION["userlogin"]; ?></p>
 					</div>
 				</div>
 			<!-- End of header section -->
 			
-			<!-- Begining of sidebar navigation -->
-				<div id="sidebarNav">
-				<ul class="side-bar">
-					<li class="side-list"><a href="customer_details.php">Add Customer & Loan</a></li>
-					<li class="side-list"><a href="viewcustomers.php">View Customers List</a></li>
-					<li class="side-list"><a href="customer_report.php">Customer Report</a></li>
-					<li class="side-list"><a href="viewloans.php">View Loans</a></li>
-					<li class="side-list"><a href="defaulters.php">Defaulters</a></li>
-					<li class="side-list"><a href="on-goingloans.php">On-going Loans</a></li>
-					<li class="side-list"><a href="clearedloans.php">Cleared Loans</a></li>
-					<li class="side-list"><a href="payments_list.php">Loan Payments</a></li>
-					<li class="side-list"><a href="defaulters_report.php">Defaulters Report</a></li>
-					<li class="side-list"><a href="clearedloans_report.php">Cleared Loans Report</a></li>
-				</ul>
-				</div>
-			<!-- End of sidebar navigation -->
-			
 			<!-- Begining of main content section -->
 				<div id="main_content">
 					<p>Welcome to the Zero Interest Finance Ltd program. Click any of the links to go to your disired section</p>
-				
-				<?php include "footer.inc"; ?>
-				</div>
-			
-				<div id="side_content">
-					<form>
-						<p><label>Loans Expiring Today:</label><input class="side_content" type="text"></p>
-						<p><label>Loans Expiring Tommorrow:</label><input class="side_content" type="text"></p>
-						<p><label>Current Number of Customers:</label><input class="side_content" type="text"></p>
-						<p><label>Current Number of Loans:</label><input class="side_content" type="text"></p>
-					</form>
+					
+					<div>
+						<?php 
+							$tdy_dues = mysqli_num_rows(mysqli_query($conn, "SELECT LOAN_NO FROM `loan details table` WHERE FINAL_PAYMENT_DATE = current_date()"));
+							$tmrw_dues = mysqli_num_rows(mysqli_query($conn, "SELECT LOAN_NO FROM `loan details table` WHERE FINAL_PAYMENT_DATE = current_date()+1"));
+							$num_of_cust = mysqli_num_rows(mysqli_query($conn, "SELECT CUSTOMER_NO FROM `customer details table`"));
+							$num_of_loans = mysqli_num_rows(mysqli_query($conn, "SELECT LOAN_NO FROM `loan details table`"));
+						?>
+						<form>
+							<p><label>Loans Expiring Today:</label><input class="side_content" type="text" value="<?php echo $tdy_dues ?>"/></p>
+							<p><label>Loans Expiring Tommorrow:</label><input class="side_content" type="text" value="<?php echo $tmrw_dues ?>"/></p>
+							<p><label>Current Number of Customers:</label><input class="side_content" type="text" value="<?php echo $num_of_cust ?>"/></p>
+							<p><label>Current Number of Loans:</label><input class="side_content" type="text" value="<?php echo $num_of_loans ?>"/></p>
+						</form>
+					</div>
+				<?php //include "footer.inc"; ?>
 				</div>
 				
 				<div id="logout_container">

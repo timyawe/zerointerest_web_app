@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Payment Details List</title>
-		<meta name="viewport" content="width=device-width initial-scale=1.0"/>
+		<!--<meta name="viewport" content="width=device-width initial-scale=1.0"/>-->
 		<script src="table_filters.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
@@ -61,7 +61,7 @@
 						return $returnedValue;
 						}*/
 					$tablehead = <<<TABLE
-							<div id="top"><a href="#bottom">End of Table</a></div>
+							<!--<div id="top"><a href="#bottom">End of Table</a></div>-->
 							<div>
 								<h1 class='table_heading'>Payment Details List
 								<input type=text id="search_field" placeholder="Search by name...">

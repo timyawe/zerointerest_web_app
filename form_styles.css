@@ -1,12 +1,12 @@
 .side_content {
 		width: 20%;
 		display: inline-block;
-		background-color: black;
+		/*background-color: black;*/
 }
 
 .container {
 			background-color: #f2f2ff;
-			padding: 20px;
+			padding: 0px 20px 20px 20px;
 			/*min-height: 100%;*/
 			box-sizing: border-box;
 			border-radius: 5px;
@@ -29,7 +29,7 @@
 
 #payment_form_container {
 	background-color: #f2f2ff;
-	width: 90%;
+	/*width: 90%;*/
 	margin: auto;
 	padding: 10px;
 	box-sizing: border-box;
@@ -102,12 +102,12 @@
 .instalment_container {
 						width: 97%;
 						margin: auto;
-						margin-top: 4%;
+						margin-top: 0%;
 						border-radius: 3px;
 						background-color: #f2f2ff;
 						box-sizing: border-box;
 						position: relative;
-						padding: 10px;
+						padding: 10px 10px 0px 10px;
 }
 
 /*.instalment_container h2 {
@@ -275,7 +275,7 @@ textarea {
 }
 
 .form-buttons {
-				float: left;
+				/*float: left;*/
 }
 /*.25-left {
 			position: absolute;

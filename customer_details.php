@@ -82,26 +82,13 @@
 					<h1>ZERO INTEREST FINANCE LIMITED</h1>
 					<div id="nav">
 					<a href="main_page.php">Home</a>
-					<a class="active-nav-link" href="#">Customers Page</a>
-					<a href="loans_page.html">Loans Page</a>
+					<a href="customers_page.php">Customers</a>
+					<a href="reports.php">Reports</a>
+					<a href="">Account</a>
+					<!--<a href="loans_page.html">Loans Page</a>-->
 					</div>
 				</div>
 			<!-- End of header section -->
-			
-			<!-- Begining of sidebar navigation -->
-				<div id="sidebarNav">
-				<ul class="side-bar">
-				<?php if (isset($_SESSION['customer_no'])) {
-					echo "<li class='side-list'><a class='active-sidebar-link' href='#'>Edit Customer</a></li>";
-				} else {
-					echo "<li class='side-list'><a class='active-sidebar-link' href='#'>Add Customer & Loan</a></li>";
-				}
-				?>
-					<li class="side-list"><a href="viewcustomers.php">View Customers List</a></li>
-					<li class="side-list"><a href="customer_report.php">Customer Report</a></li>
-				</ul>
-				</div>
-			<!-- End of sidebar navigation -->
 			
 			<!-- Begining of content section -->
 			
@@ -110,10 +97,10 @@
 						<div id="formSection" class="container">
 						<h2 class="form_heading">Customer Details</h2>
 						<?php
-								if (isset($_SESSION['add_customer'])) {
+								/*if (isset($_SESSION['add_customer'])) {
 									echo "<span class='main_content' class='alert-response-success'>Customer Added</span>";
 									unset($_SESSION['add_customer']);
-								}
+								}*/
 								
 								if (isset($_SESSION['edit_customer'])) {
 									echo "<span class='alert-response-success'>Customer Details Edited</span><br/>";
@@ -338,22 +325,24 @@
 								<div class="row" id="SubmitButton">
 									<input type="submit" id="addbtn" value="Add Customer" name="add" <?php if (isset($_SESSION['customer_no'])) { echo "disabled"; } ?> />
 									<input type="submit" id="editbtn" value="Save Changes" name="edit" <?php if (!isset($_SESSION['customer_no'])) { echo "disabled"; } ?> />
-									<?php if (isset($_SESSION['customer_no'])) { echo "<a class='form-link' href='addloandecision.php?customer_no={$_SESSION['customer_no']}'>Add Loan</a>"; } ?>
+									<?php //if (isset($_SESSION['customer_no'])) { echo "<a class='form-link' href='addloandecision.php?customer_no={$_SESSION['customer_no']}'>Add Loan</a>"; } ?>
 								</div>
 								</div>
 							</form>
 						<!--	<a href="documents/chapter06-120827115400-phpapp01.pptx">pdf</a>
 							<?php 
-							$imagesql = "SELECT * FROM ImagesInfo WHERE CustomerNo = " . $_SESSION['customer_no'];
-							$imagesqlresult = mysqli_query($conn, $imagesql);
-							if (mysqli_num_rows($imagesqlresult)>0) {
-								$imagepaths = array();
-								while ($image_row = mysqli_fetch_assoc($imagesqlresult)){
-								echo "<img src='images/".$image_row['Image_name'] . $image_row['Image_ID'] . $image_row['Image_type']. "' />";
+							if(isset($_SESSION['customer_no'])){
+								$imagesql = "SELECT * FROM ImagesInfo WHERE CustomerNo = " . $_SESSION['customer_no'];
+								$imagesqlresult = mysqli_query($conn, $imagesql);
+								if (mysqli_num_rows($imagesqlresult)>0) {
+									$imagepaths = array();
+									while ($image_row = mysqli_fetch_assoc($imagesqlresult)){
+									echo "<img src='images/".$image_row['Image_name'] . $image_row['Image_ID'] . $image_row['Image_type']. "' />";
+									}
+									//print_r( $imagepaths);
+								} else {
+									echo mysqli_error($conn);
 								}
-								//print_r( $imagepaths);
-							} else {
-								echo mysqli_error($conn);
 							}
 							//foreach($imagepaths as $htmlpath) {
 							//echo "<img src='images/$htmlpath' />";
@@ -391,7 +380,7 @@
 						<tr>
 							<td colspan="2" style="white-space: normal;">
 								<form action="customerdetails_handler.php" method="post" enctype="multipart/form-data" multiple="multiple">
-									<div><input type="text" name="custno_img" value="<?php echo $_SESSION['customer_no']?>" hidden />
+									<div><input type="text" name="custno_img" value="<?php if(isset($_SESSION['customer_no'])){echo $_SESSION['customer_no'];}?>" hidden />
 									<input multiple type="file" name="uploadedfile[]" />
 									<input type="submit" name="image" value="Add Image" 
 									<?php 
@@ -440,7 +429,7 @@
 						<tr>
 							<td colspan="2" style="white-space: normal;">
 								<form action="customerdetails_handler.php" method="post" enctype="multipart/form-data" multiple="multiple">
-									<input type="text" name="custno_doc" value="<?php echo $_SESSION['customer_no']?>" hidden />
+									<input type="text" name="custno_doc" value="<?php if(isset($_SESSION['customer_no'])){echo $_SESSION['customer_no'];}?>" hidden />
 									<input multiple type="file" name="uploadeddocument[]"/>
 									<input type="submit" name="document" value="Add Documents" 
 										<?php if (!isset($_SESSION['customer_no'])) { 

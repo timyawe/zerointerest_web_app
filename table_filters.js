@@ -276,10 +276,10 @@ function total_loans_no() {
 	var sum, table, td, tr, y, txtValue;
 	
 	table = document.getElementsByTagName("table");
-	tr = document.getElementsByTagName("tr");
+	//tr = document.getElementsByTagName("tr");
+	tr_data = document.getElementsByClassName("table_data");
 	
-	
-	document.getElementsByClassName("no_of_loans_total")[0].innerHTML = tr.length;	
+	document.getElementsByClassName("no_of_loans_total")[0].innerHTML = tr_data.length;	
 	
 }
 

@@ -4,15 +4,20 @@ include "login_session.inc";
 //Connect to database
 include "dbconn.php";
 
+$json_post_file = file_get_contents('php://input');//recieves JSON type data
+$json_data = json_decode($json_post_file);
+
+$json_response = new stdClass();
+
+
 //Checks wether user wants to view instalment details
-if (!isset($_POST['add']) and !isset($_POST['edit']) ) {
+if (!isset($json_data->inst_add) and !isset($json_data->inst_edit) ) {
 	$_SESSION['InstalmentID'] = $_REQUEST['instalment_ID'];
 	header("Location: instalment_form.php");
 }
 
 //Checks wether user has clicked the 'add' button on instalemts form
-
-if (isset($_POST['add'])) {
+if (isset(/*$_POST['add']*/$json_data->inst_add)) {
 	
 	/*/Arrays to collect fields which have been filled
 	the arrays are to be used to add a record in the database in a FIELDS LIST/VALUE LIST format*/ 
@@ -20,46 +25,49 @@ if (isset($_POST['add'])) {
 	$addedvalues = array();
 	
 	//Assign fileds to variables and add to the arrays
-	if ($_POST['instalmenttype'] != "") {
-		$instalmenttype = $_POST['instalmenttype'];
+	if ($json_data->inst_type != "") {
+		$inst_type = $json_data->inst_type;
 		$addedfields[] = "`Instalment_Type`";
-		$addedvalues[] = "'".$instalmenttype."'";
+		$addedvalues[] = "'".$inst_type."'";
 	}
 	
-	if ($_POST['startdate'] != "") {
+	if ($json_data->inst_startdate != "") {
 		//Change date format for mysql date compatibility
-		$startdate = date("Y-m-d", strtotime($_POST['startdate']));
+		$inst_startdate = date("Y-m-d", strtotime($json_data->inst_startdate));
 		$addedfields[] = "`Instalment_StartDate`";
-		$addedvalues[] = "'".$startdate."'";
+		$addedvalues[] = "'".$inst_startdate."'";
 	}
 		
-	if ($_POST['period'] != "") {
-		$period = $_POST['period'];
+	if ($json_data->inst_period != "") {
+		$period = $json_data->inst_period;
 		$addedfields[] = "`Instalment_Period`";
 		$addedvalues[] = $period;
 	}
 	
-	if ($_POST['enddate'] != "") {
+	if ($json_data->inst_startdate != "" && $json_data->inst_period != "") {
+		$st_date = date_create($json_data->inst_startdate);
+		$pd = $json_data->inst_period;
+		$gen_date = date_add($st_date, date_interval_create_from_date_string("$pd days"));
 		//Change date format for mysql date compatibility
-		$enddate = date("Y-m-d", strtotime($_POST['enddate']));
+		$inst_enddate = date_format($gen_date,"Y-m-d");
 		$addedfields[] = "`Instalment_EndDate`";
-		$addedvalues[] = "'".$enddate."'";
+		$addedvalues[] = "'".$inst_enddate."'";
 	}
 	
-	if ($_POST['instalmentprincipal'] != "") {
+	if ($json_data->inst_principal != "") {
 		//Remove the thousand seperator to make value decimal
-		$instalmentprincipal = str_replace(',','',$_POST['instalmentprincipal']);
+		$instalmentprincipal = str_replace(',','',$json_data->inst_principal);
 		$addedfields[] = "`Instalment_Amount`";
 		$addedvalues[] = $instalmentprincipal;
 	}
 	
-	if ($_POST['status'] != "") {
-		$status = $_POST['status'];
+	if ($json_data->inst_status != "") {
+		$status = $json_data->inst_status;
 		$addedfields[] = "`Instalment_Status`";
 		$addedvalues[] = "'".$status."'";
 	}
 	
-	if ($_POST['interestamount'] != "") {
+	/*if ($_POST['interestamount'] != "") {
 		$interestamount = $_POST['interestamount'];
 		$addedfields[] = "`Interest_Amount`";
 		$addedvalues[] = $interestamount;
@@ -70,10 +78,10 @@ if (isset($_POST['add'])) {
 		$totalamount = str_replace(',','',$_POST['totalamount']);
 		$addedfields[] = "`TotalAmount`";
 		$addedvalues[] = $totalamount;
-	}
+	}*/
 	
-	if ($_POST['comment'] != "") {
-		$comment = $_POST['comment'];
+	if ($json_data->inst_comment != "") {
+		$comment = $json_data->inst_comment;
 		$addedfields[] = "`Comment`";
 		$addedvalues[] = "'".$comment."'";
 	}
@@ -101,35 +109,32 @@ if (isset($_POST['add'])) {
 		//Get the last inserted record
 		$lastID = mysqli_insert_id($conn);
 		
-		//select last inserted record
-		$lastIDsql = "SELECT * FROM `Loan Instalments` WHERE Instalment_ID =" . $lastID;
-		
-		$lastIDresult = mysqli_query($conn, $lastIDsql);
-		
-		if (mysqli_num_rows($lastIDresult) > 0 ) {
-			/*GLOBAL*/ $lastIDrow = mysqli_fetch_assoc($lastIDresult);
-			
-			//Check wether another instalment is being added to update loan period and end date details.
-			if (isset($_SESSION['new_instalment'])) {
+			//Check wether another instalment is being added to update previous instalment, loan period and end date details.
+			if ($inst_type == "Rescheduled") {
+				$updt_prev_inst = mysqli_query($conn, "UPDATE `Loan Instalments` SET Instalment_Status = '$inst_type' , Instalment_ClearedDate = '$inst_startdate' WHERE Instalment_ID =".$_SESSION['prev_inst']);
 				
-				$inst_period = $lastIDrow['Instalment_Period'];
-				$inst_enddate = $lastIDrow['Instalment_EndDate'];
-				
-				$updateloansql = "UPDATE LOW_PRIORITY `Loan Details Table` SET `PROVISIONAL_PERIOD` = PROVISIONAL_PERIOD + 
-				$inst_period, `FINAL_PAYMENT_DATE` = $inst_enddate WHERE LOAN_NO =" . $_SESSION['loan_no'];
-				
-				if (mysqli_query($conn, $updateloansql)) {
-					$_SESSION['loan_updated_by_instalment'] = 1;
-					$_SESSION['InstalmentID'] = $lastIDrow['Instalment_ID'];
-					$_SESSION['add_instalment'] = 1;
-					header ("Location: instalment_form.php");
-				} 
+				if(!$updt_prev_inst){//failed to update previous instalemt hence delete current
+					$_SESSION['noadd_instalment'] = "Failed to add new record due to an update failure <br>". mysqli_error($conn); 
+					mysqli_query($conn, "DELETE FROM `Loan Instalments` WHERE Instalment_ID = $lastID LIMIT 1");
+					header("Location: instalment_form.php");
+				}else{
+					$fn_per_row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT FINAL_PERIOD FROM `Loan Details Table` WHERE LOAN_NO =" . $_SESSION['loan_no']));
+					$updateloansql = "UPDATE LOW_PRIORITY `Loan Details Table` SET `FINAL_PERIOD` =". $fn_per_row['FINAL_PERIOD']. " + 
+					$period, `FINAL_PAYMENT_DATE` = '$inst_enddate', STATUS = 'On-going' WHERE LOAN_NO =" . $_SESSION['loan_no'];
+					
+					if (mysqli_query($conn, $updateloansql)) {
+						$_SESSION['loan_updated_by_instalment'] = 1;
+						$_SESSION['InstalmentID'] = $lastID;
+						$_SESSION['add_instalment'] = 1;
+						header ("Location: loan_instalments.php");
+					} 
+				}
+			}else{
+				$_SESSION['InstalmentID'] = $lastID;
+				$_SESSION['add_instalment'] = 1;
+				header ("Location: loan_instalments.php");
 			}
 			
-			$_SESSION['InstalmentID'] = $lastIDrow['Instalment_ID'];
-			$_SESSION['add_instalment'] = 1;
-			header ("Location: instalment_form.php");
-		}
 	} else {
 		$_SESSION['noadd_instalment'] = "<span class='alert-response-error'>". mysqli_error($conn)."</span>";
 		header ("Location: instalment_form.php");
@@ -139,8 +144,8 @@ if (isset($_POST['add'])) {
 
 
 //Checks wether user has clicked the 'edit' button on instalments form
-if (isset($_POST['edit'])) {
-	
+if (isset($json_data->inst_edit)) {
+
 	//find the currently edited record
 	$editselectsql = "SELECT * FROM `qry Loan Instalments` WHERE Instalment_ID =" . $_SESSION['InstalmentID'];
 	
@@ -149,45 +154,49 @@ if (isset($_POST['edit'])) {
 	if (mysqli_num_rows($editselectresult) > 0 ) {
 		$editloan_row = mysqli_fetch_assoc($editselectresult);
 		
-		$instalmenttype = $editloan_row['Instalment_Type'];
-		$startdate = $editloan_row['Instalment_StartDate'];
-		$instalmentprincipal = $editloan_row['Instalment_Amount'];
-		$period = $editloan_row['Instalment_Period'];
-		$enddate = $editloan_row['Instalment_EndDate'];
-		$interestamount = $editloan_row['InterestAmount'];
-		$totalamount = $editloan_row['TotalAmount'];
-		$penalty = $editloan_row['Penalty'];
-		$cleareddate = $editloan_row['Instalment_ClearedDate'];
+		//$instalmenttype = $editloan_row['Instalment_Type'];
+		//$startdate = date("d-m-Y",strtotime($editloan_row['Instalment_StartDate']));
+		//$instalmentprincipal = number_format($editloan_row['Instalment_Amount']);
+		//$period = $editloan_row['Instalment_Period'];
+		//$enddate = date("d-m-Y", strtotime($editloan_row['Instalment_EndDate']));
+		//$interestamount = $editloan_row['InterestAmount'];
+		//$totalamount = $editloan_row['TotalAmount'];
+		$penalty = number_format($editloan_row['Penalty']);
+		if(is_null($editloan_row['Instalment_ClearedDate'])){//strtotime function interprets NULL date values as 0 hence creating an invalid date
+			$cleareddate = "";
+		}else{
+			$cleareddate = date("d-m-Y", strtotime($editloan_row['Instalment_ClearedDate']));
+		}
 		$comment = $editloan_row['Comment'];
-		$status = $editloan_row['Instalment_Status'];
+		//$status = $editloan_row['Instalment_Status'];
 		
 	}
 	
 	$editedfields = array();
 	
 	//checks wether a field was edited and if so adds it to the array 
-	if ($_POST['instalmenttype'] != $instalmenttype) {
-		$editedfields["Instalment_Type"] = $_POST['instalmenttype'];
+	/*if ($json_data->inst_type != $instalmenttype) {
+		$editedfields["Instalment_Type"] = $json_data->inst_type;
 	}
 	
-	if ($_POST['startdate'] != $startdate) {
-		//Change date format for mysql date compatibility
-		$editedfields["Instalment_StartDate"] = date("Y-m-d",strtotime($_POST['startdate'])) ;
+	if ($json_data->inst_startdate != $startdate) {
+		
+		$editedfields["Instalment_StartDate"] = date("Y-m-d",strtotime($json_data->inst_startdate)) ;
 	}
 	
-	if ($_POST['period'] != $period) {
-		$editedfields["Instalment_Period"] = $_POST['period'];
+	if ($json_data->inst_period != $period) {
+		$editedfields["Instalment_Period"] = $json_data->inst_period;
 	}
 	
-	if ($_POST['enddate'] != $enddate) {
-		//Change date format for mysql date compatibility
-		$editedfields["Instalment_EndDate"] = date("Y-m-d",strtotime($_POST['enddate'])) ;
+	if ($json_data->inst_enddate != $enddate) {
+		
+		$editedfields["Instalment_EndDate"] = date("Y-m-d",strtotime($json_data->inst_enddate)) ;
 	}
 	
-	if ($_POST['instalmentprincipal'] != $instalmentprincipal) {
-		//Remove the thousand seperator to make value decimal
-		$editedfields["Instalment_Amount"] = str_replace(',','',$_POST['instalmentprincipal']);
-	}
+	if ($json_data->inst_principal != $instalmentprincipal) {
+		
+		$editedfields["Instalment_Amount"] = str_replace(',','',$json_data->inst_principal);
+	}*/
 	
 	//Do not require update because they are generated by 'qry Loan Instalments' view
 	/*if ($_POST['interestamount'] != $interestamount) {
@@ -198,27 +207,23 @@ if (isset($_POST['edit'])) {
 		//Remove the thousand seperator to make value decimal
 		$editedfields["TotalAmount"]  = str_replace(',','',$_POST['totalamount']);
 	}*/
-	
-	if ($_POST['comment'] != $comment) {
-		$editedfields["Comment"] = trim($_POST['comment']);
+
+	if ($json_data->inst_comment != $comment) {
+		$editedfields["Comment"] = trim($json_data->inst_comment);
 	}
 	
 	//Check if user is editing instalment to "Cleared" without payments
-	switch ($_POST['status']) {
+	/*switch ($json_data->inst_status) {
 		case "Rescheduled":
 		$paymentsselectsql = "SELECT PaidAmount FROM `Instalment Payments` WHERE ID =". $_SESSION['InstalmentID'];
 		$paymentsselectsqlresult = mysqli_query($conn, $paymentsselectsql);
-		if (mysqli_num_rows($paymentsselectsqlresult) > 0 ) {
-			$paymentsrow = mysqli_fetch_assoc($paymentsselectsqlresult);
-			if ($paymentsrow['PaidAmount'] <= 0) {
+		if (mysqli_num_rows($paymentsselectsqlresult) == 0 ) {
 				$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot 
 				be rescheduled at this time because it has no payments.</span>";
-			}
+		
 		} else {
-			/*$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot 
-				be rescheduled at this time because it has no payments.</span>";*/
-			if($_POST['status'] != $status){
-				$editedfields["Instalment_Status"] = $_POST['status'];
+			if($json_data->inst_status != $status){
+				$editedfields["Instalment_Status"] = $json_data->inst_status;
 			}
 		}
 		break;
@@ -226,31 +231,31 @@ if (isset($_POST['edit'])) {
 		case "Cleared":
 		$amountdueselectsql = "SELECT AmountDue FROM `Instalments` WHERE Instalment_ID = " .$_SESSION['InstalmentID'];
 		$amountdueselectsqlresult = mysqli_query($conn, $amountdueselectsql);
-		$amountduerow = mysqli_fetch_assoc($amountdueselectsql);
+		$amountduerow = mysqli_fetch_assoc($amountdueselectsqlresult);
 		if ($amountduerow['AmountDue'] > 0 ) {
 			$_SESSION['no_payments'] = "<span class='alert-response-information'>Alert: This instalment cannot be cleared 
 				at this time because it has amount due.</span>";
 		}else{
-			if($_POST['status'] != $status){
-				$editedfields["Instalment_Status"] = $_POST['status'];
+			if($json_data->inst_status != $status){
+				$editedfields["Instalment_Status"] = $json_data->inst_status;
 			}
 		}
 		break;
 		
 		default:
-		if ($_POST['status'] != $status) {
-			$editedfields["Instalment_Status"] =  $_POST['status'];
+		if ($json_data->inst_status != $status) {
+			$editedfields["Instalment_Status"] =  $json_data->inst_status;
 		}
-	}
+	}*/
 	
-	if ($_POST['cleareddate'] != $cleareddate) {
-		//Change date format for mysql date compatibility
-		$editedfields["Instalment_ClearedDate"] = date("Y-m-d",strtotime($_POST['cleareddate'])) ;
-	}
+	/*if ($json_data->inst_cleareddate != $cleareddate) {
+		
+		$editedfields["Instalment_ClearedDate"] = date("Y-m-d",strtotime($json_data->inst_cleareddate)) ;
+	}*/
 	
-	if ($_POST['penalty'] != $penalty) {
+	if ($json_data->inst_penalty != $penalty) {
 		//Remove the thousand seperator to make value decimal
-		$editedfields["Penalty"] = str_replace(',','',$_POST['penalty']);
+		$editedfields["Penalty"] = str_replace(',','',$json_data->inst_penalty);
 	}
 	
 	if (count($editedfields) > 0 ) {
@@ -266,7 +271,7 @@ if (isset($_POST['edit'])) {
 					$updaterecordrow = mysqli_fetch_assoc($updaterecordsqlresult);
 					$_SESSION['InstalmentID'] = $updaterecordrow["Instalment_ID"];
 					$_SESSION['edit_instalment'] = 1;
-				header ("Location: instalment_form.php");
+				header ("Location: loan_instalments.php");
 				}
 			} else {
 				echo mysqli_error($conn);
@@ -277,7 +282,6 @@ if (isset($_POST['edit'])) {
 		$_SESSION['noedit_instalment'] = 1;
 		header ("Location: instalment_form.php");
 	}
-	
 }
 
 

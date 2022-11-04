@@ -2,7 +2,7 @@
 $host = "127.0.0.1";
 $user = "root";
 $password = "";
-$database = "CUSTOMER DATABASE";
+$database = "CUSTOMER_DATABASE_JINJA";
 
 //Database Connection
 $conn = new mysqli($host, $user, $password, $database);

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>All Loans</title>
-		<meta name="viewport" content="width=device-width initial-scale=1.0"/>
+		<!--<meta name="viewport" content="width=device-width initial-scale=1.0"/>-->
 		<script src="table_filters.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
@@ -73,11 +73,11 @@ $table_header=<<<EOD
 			<th>LOAN_REF NO</th>
 			<th>START DATE</th>
 			<th>PERIOD</th>
-			<th>FINAL PAYMENT DATE</th>
+			<th>END DATE</th>
 			<th>PRINCIPAL</th>
 			<th>INTEREST RATE</th>
-			<th>FINAL PRINCIPAL & INTEREST</th>
-			<th>COMMENT</th>
+			<th>PRINCIPAL & INTEREST</th>
+			<!--<th>COMMENT</th>-->
 			<th>STATUS</th>
 			<th>DATE CLEARED</th>
 			<th>EDIT LOAN</th>
@@ -99,7 +99,7 @@ $table_header=<<<EOD
 			</td>
 			<td></td>
 			<td></td>
-			<td></td>
+			<!--<td></td>-->
 			<td></td>
 			<td></td>
 			<td></td>
@@ -116,7 +116,7 @@ echo $table_header;
 						$cleareddate = date("d/m/Y", strtotime($row['DATE_CLEARED']));
 					}
 //$table_details .=<<<EOD
-		echo "<tr title='".$row['CUSTOMER_NAME']."'>";
+		echo "<tr title='".$row['CUSTOMER_NAME']."' class='table_data'>";
 		echo	"<td>".$row['LOAN_NO']."</td>";
 		echo	"<td>".$row['REF_NO']."</td>";
 		echo	"<td class='filter_customername total_loans'>".$row['CUSTOMER_NAME']."</td>";
@@ -127,7 +127,7 @@ echo $table_header;
 		echo	"<td class='loan_principal' style='text-align:right;'>".$principal."</td>";
 		echo	"<td style='text-align:center;'>".$row['INTERST_RATE']."</td>";
 		echo	"<td class='loan_principal&int' style='text-align:right;'>".number_format($row['FINAL_PRINCIPAL_&_INTEREST'])."</td>";
-		echo	"<td><form><textarea style='border-style: none; resize: none;'>".$row['COMMENT']."</textarea></form></td>";
+		//echo	"<td><form><textarea style='border-style: none; resize: none;'>".$row['COMMENT']."</textarea></form></td>";
 		echo	"<td>".$row['STATUS']."</td>";
 		echo	"<td class='cleared_loan'>".$cleareddate."</td>";
 		echo	"<td><a href='loandetails_handler.php?loan_no=".$row['LOAN_NO']."'>Edit Loan</a></td>";
@@ -146,7 +146,7 @@ echo $table_header;
 				<td class='principal_total'></td>
 				<td></td>
 				<td class='principal&int_total'></td>
-				<td></td>
+				<!--<td></td>-->
 				<td></td>
 				<td></td>
 				<td></td>

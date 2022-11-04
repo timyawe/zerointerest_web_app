@@ -133,9 +133,7 @@ FORM;
 			$instalment_sql = "SELECT * FROM Instalments WHERE LoanNo = " . $_REQUEST['loan_no'];
 			
 			$instalment_result = mysqli_query($conn, $instalment_sql);
-			
-			if (mysqli_num_rows($instalment_result) > 0 ) {
-				$instalment_tablehead = <<<TABLE
+			$instalment_tablehead = <<<TABLE
 						<div class="instalment-table">
 						<hr>
 						
@@ -150,15 +148,16 @@ FORM;
 							<th>Penalty</th>
 							<th>Accum. Penalty</th>
 							<th>Amount Payable</th>
-							<th>Amount Paid</th>
+							<th>Paid</th>
 							<th>Amount Due</th>
 							<th>Instalment Type</th>
 							<th>Status</th>
 							<th>Cleared Date</th>
-							<th>Edit Instalment</th>
 							</tr>
 TABLE;
-echo $instalment_tablehead;
+			if (mysqli_num_rows($instalment_result) > 0 ) {
+				
+				echo $instalment_tablehead;
 
 				while ($instalment_row=mysqli_fetch_assoc($instalment_result)) {
 					
@@ -172,7 +171,7 @@ echo $instalment_tablehead;
 					
 
 			
-				//$instalment_tabledetails .=<<<TABLE
+					//$instalment_tabledetails .=<<<TABLE
 					echo	"<tr>";
 					echo	"<td>{$instalment_row['Instalment_No']}</td>";
 					echo	"<td>".date("d/m/Y", strtotime($instalment_row['Instalment_StartDate']))."</td>";
@@ -187,12 +186,12 @@ echo $instalment_tablehead;
 					echo	"<td>{$instalment_row['Instalment_Type']}</td>";
 					echo	"<td>{$instalment_row['Instalment_Status']}</td>";
 					echo	"<td>".$cleareddate."</td>";
-					echo	"<td><a href='loaninstalments_handler.php?instalment_ID={$_SESSION['InstalmentID']}'
+					/*echo	"<td><a href='loaninstalments_handler.php?instalment_ID={$_SESSION['InstalmentID']}'
 						onclick=".'"'."window.open('loaninstalments_handler.php?instalment_ID={$_SESSION['InstalmentID']}', 
 								'popup', 'width=640, height=540', 'location=center'); return false;".'"'.
-								">Edit</a></td>";
+								">Edit</a></td>";*/
 					echo	"</tr>";
-					}
+				}
 					echo "<tr class='totals_row'>
 							<td colspan='2'>Total</td>
 							<td class='principal_total'></td>
@@ -206,15 +205,16 @@ echo $instalment_tablehead;
 							<td></td>
 							<td></td>
 							<td></td>
-							<td></td>
 						 </tr>";
-					$instalment_tablefooter = "</table>";
+					//$instalment_tablefooter = "</table>";
 			} else {
 				echo mysqli_error($conn);
+				echo $instalment_tablehead;
+				echo "<tr><td colspan='15' style='text-align: center'>This loan has no instalments</td></tr>";
 			}
 //TABLE;
 		//	echo $instalment_tabledetails;
-			echo $instalment_tablefooter;
+			echo "</table>";//$instalment_tablefooter;
 			echo "</div>";
 			
 				

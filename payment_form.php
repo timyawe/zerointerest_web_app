@@ -3,6 +3,10 @@
 //connect to database
 include "dbconn.php";
 
+if(isset($_REQUEST['new_pymt'])){
+	unset($_SESSION['paymentID']);
+}
+
 if (!isset($_SESSION['paymentID'])) {
 	$p_date = $p_type = $p_amount = $p_confmd = " ";
 	$inst_ID = $_REQUEST['instalment_ID'];
@@ -17,7 +21,7 @@ if (!isset($_SESSION['paymentID'])) {
 		$p_amount = number_format($row['PAID_AMOUNT']);
 		$p_confmd = $row['PAYMENT_CONFIRMED'];
 		$inst_ID = $row['InstalmentID'];
-		unset($_SESSION['paymentID']);
+		//unset($_SESSION['paymentID']);
 	}
 }
 
@@ -28,6 +32,26 @@ if (!isset($_SESSION['paymentID'])) {
 	<title>Payment Form</title>
 	<link href="form_styles.css" type="text/css" rel="stylesheet" />
 	<link href="text_styles.css" type="text/css" rel="stylesheet" />
+	<style>
+		.pymt_btn{
+			/*background-color: #52B2A0;*/
+			padding: 7px 7px;
+			border-radius: 4px;
+			/*color: #ffffff;
+			font-family: calibri;
+			font-size: 14;
+			margin-top: 12px;*/
+			border: 1px solid #52B2A0;/*#ccc;*/
+			cursor: pointer;
+			outline: none;
+		}					
+
+		.pymt_btn:hover {
+			background-color: rgba(27,233,179,0.9);
+			color: white;
+			border-color: #111;
+		}
+	</style>
 	</head>
 		<body>
 			<?php 
@@ -64,7 +88,7 @@ if (!isset($_SESSION['paymentID'])) {
 			?>
 			<div id="payment_form_container">
 				<form method="POST" action="paymentdetails_handler.php">
-					<div><input type="text" name="inst_ID" value="<?php echo $inst_ID; ?>"></div>
+					<input type="text" name="inst_ID" value="<?php echo $inst_ID; ?>" hidden />
 					<div class="row">
 					<div class="col-25"><label>Date:</label></div>
 					<div class="col-75"><input type="text" name="p_date" value="<?php echo $p_date; ?>"></div>
@@ -94,10 +118,9 @@ if (!isset($_SESSION['paymentID'])) {
 					</div>
 					</div>
 					
-					<input type="submit" name="add" value="Add Payment" title="Click to confirm new payment" 
-					<?php if (isset($_SESSION['paymentID'])) { echo "disabled"; } ?> >
-					<input type="submit" name="edit" value="Save Changes" title="Click to confirm changes made to the payment details" 
-					<?php if (!isset($_SESSION['paymentID'])) { echo "disabled"; } ?> >
+					<button type="button" class="pymt_btn" title="Click to confirm new payment" onclick="addPayment()" <?php if (isset($_SESSION['paymentID'])) { echo "disabled"; } ?> >Add Payment</button>
+					<button type="button" class="pymt_btn" title="Click to confirm changes" onclick="editPayment()" <?php if (!isset($_SESSION['paymentID'])) { echo "disabled"; } ?> >Save Changes</button>
+					<input type="button" value="Cancel" onclick="inject_inst_tabledata()"/>
 					
 				</form>
 			</div>

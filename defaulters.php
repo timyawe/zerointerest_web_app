@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Defaulters List</title>
-		<meta name="viewport" content="width=device-width initial-scale=1.0"/>
+		<!--<meta name="viewport" content="width=device-width initial-scale=1.0"/>-->
 		<script src="table_filters.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />
@@ -43,12 +43,29 @@
 				//Connect to database
 				include "dbconn.php";
 				
+				$check_defaulters = mysqli_query($conn, "SELECT Instalment_ID FROM `loan instalments` WHERE Instalment_EndDate < current_date() AND Instalment_Status = 'On-going'");
+				if(mysqli_num_rows($check_defaulters)>0){
+					while($check_defaulters_row = mysqli_fetch_assoc($check_defaulters)){
+						$instID = $check_defaulters_row['Instalment_ID'];
+						$update_defaulters = mysqli_query($conn, "UPDATE LOW_PRIORITY `loan instalments` SET Instalment_Status = 'Defaulting' WHERE Instalment_ID=$instID");
+						if($update_defaulters){
+							$update_flag = 1;
+						}else{
+							$update_flag = 0;
+							$update_defaulters_err = mysqli_error($conn);
+							//exit();
+						}
+					}
+				}
+				
 				$sql = "SELECT * FROM `Defaulters List`";
 				
 				$result = mysqli_query($conn, $sql);
 				
 				if (mysqli_num_rows($result) > 0 ) {
-					
+					if(isset($update_flag) && !$update_flag){
+						echo $update_defaulters_err;
+					}
 					$tablehead = <<<TABLE
 							<h1 class='table_heading'>Defaulters List
 							<input type=text id="search_field" placeholder="Search by name...">

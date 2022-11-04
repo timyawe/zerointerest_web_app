@@ -1,3 +1,17 @@
+.link_btn:link, .link_btn:visited {
+	padding: 9px 9px;
+	border-radius: 4px;
+	border: 1px solid #52B2A0;/*#ccc;*/
+	text-decoration: none;
+	color: black;
+}
+
+.link_btn:hover {
+	background-color: rgba(27,233,179,0.9);
+	color: white;
+	border-color: #111;
+}
+
 /* Table links */
 
 td>a:link, td>a:visited {
@@ -121,4 +135,16 @@ form a:hover {
 	background-color: rgba(27,233,179,0.9);
 	color: white;
 	border-color: #111;
+}
+
+/* Styling Report Links */
+.rep_link{
+	color:#52B2A0;
+	font-weight: bold;
+}
+.rep_link: active{
+	color: rgba(27,233,179,0.9);
+}
+.rep_link:hover{
+	color: rgba(27,233,179,0.9);
 }

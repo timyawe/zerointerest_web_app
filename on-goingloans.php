@@ -59,13 +59,13 @@ $table_header =<<<EOD
 				<th>CUSTOMER NAME</th>
 				<th>START DATE</th>
 				<th>PERIOD</th>
-				<th>INSTALMENT END DATE</th>
+				<!--<th>INSTALMENT END DATE</th>-->
 				<th>FINAL PAYMENT DATE</th>
 				<th>PRINCIPAL</th>
 				<th>INTEREST RATE</th>
-				<th>INSTALMENT BALANCE</th>
-				<th>FINAL PRINCIPAL & INTEREST</th>
-				<th>COMMENT</th>
+				<!--<th>INSTALMENT BALANCE</th>-->
+				<th>PRINCIPAL & INTEREST</th>
+				<!--<th>COMMENT</th>-->
 				<th>STATUS</th>
 				<th>AMOUNT PAID</th>
 				<th>EDIT</th>
@@ -84,13 +84,13 @@ echo $table_header;
 			echo 	"<td class='filter_customername'>".$row['CUSTOMER_NAME']."</td>";
 			echo 	"<td>".date("d/m/Y", strtotime($row['START_DATE']))."</td>";
 			echo 	"<td>".$row['PERIOD']."</td>";
-			echo 	"<td>".date("d/m/Y", strtotime($row['INSTALMENT_END_DATE']))."</td>";
+			//echo 	"<td>".date("d/m/Y", strtotime($row['INSTALMENT_END_DATE']))."</td>";
 			echo 	"<td>".date("d/m/Y", strtotime($row['FINAL_PAYMENT_DATE']))."</td>";
 			echo 	"<td class='loan_principal' style='text-align:right;'>".number_format($row['PRINCIPAL'])."</td>";
 			echo 	"<td style='text-align:center;'>".$row['INTERST_RATE']."</td>";
-			echo 	"<td style='text-align:right;'>".number_format($row['INSTALMENT_BALANCE'])."</td>";
+			//echo 	"<td style='text-align:right;'>".number_format($row['INSTALMENT_BALANCE'])."</td>";
 			echo 	"<td class='loan_principal&int' style='text-align:right;'>".number_format($row['FINAL_PRINCIPAL_&_INTEREST'])."</td>";
-			echo 	"<td><div class='loan-comment-field'>".$row['COMMENT']."</div></td>";
+			//echo 	"<td><div class='loan-comment-field'>".$row['COMMENT']."</div></td>";
 			echo 	"<td>".$row['STATUS']."</td>";
 			echo 	"<td class='loan_amountpaid' style='text-align:right;'>".number_format($row['AMOUNT_PAID'])."</td>";
 			echo 	"<td><a href='loandetails_handler.php?loan_no={$row['LOAN_NO']}'>Edit Details</a></td>";
@@ -107,12 +107,12 @@ echo $table_header;
 									<td></td>
 									<td></td>
 									<td></td>
+									<!--<td></td>-->
+									<td  class='principal_total'></td>
 									<td></td>
-									<td></td>
-									<td></td>
-									<td class='principal_total'></td>
+									<!--<td></td>-->
 									<td class='principal&int_total'></td>
-									<td></td>
+									<!--<td></td>-->
 									<td></td>
 									<td class='amountpaid_total'></td>
 									<td></td>

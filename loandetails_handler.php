@@ -3,9 +3,24 @@ include "login_session.inc";
 //connect to database
 require "dbconn.php";
 
+//Get customer No
+//unset($_SESSION['customer_no']);
+
+/*if(!isset($_SESSION['loan_no'])){
+	$cust_sqlresult = mysqli_query($conn, "SELECT CustomerNo FROM `Customers with loans` WHERE LOAN_NO =" .$_REQUEST['loan_no']);
+}else{
+	$cust_sqlresult = mysqli_query($conn, "SELECT CustomerNo FROM `Customers with loans` WHERE LOAN_NO =" .$_SESSION['loan_no']);
+}*/
+
+
 //Checks wether user wants to view loan details
 if (!isset($_POST['add']) and !isset($_POST['edit']) ) {
 	$_SESSION['loan_no'] = $_REQUEST['loan_no'];
+	$cust_sqlresult = mysqli_query($conn, "SELECT CustomerNo FROM `Customers with loans` WHERE LOAN_NO =" .$_REQUEST['loan_no']);
+	if(mysqli_num_rows($cust_sqlresult)>0){
+		$custrow = mysqli_fetch_assoc($cust_sqlresult);
+		$_SESSION['customer_no'] = $custrow['CustomerNo'];
+	}
 	header("Location: loandetails_edit.php");
 }
 
@@ -50,13 +65,17 @@ if (isset($_POST['add'])){
 		$addedvalues[] = "'".$final_period."'";
 	}
 	
-	if ($_POST['FinalPaymentDate']!= "") {
+	if ($_POST['final_period']!= "" && $_POST['startdate']!= "") {
+		$stdate= date_create($_POST['startdate']);
+		$pd = $_POST['final_period'];
+		$gen_date = date_add($stdate,date_interval_create_from_date_string("$pd days"));
 		//Change date format for mysql date compatibility
-		$final_paymentdate = date("Y-m-d",strtotime($_POST['FinalPaymentDate']));
+		$final_paymentdate = date_format($gen_date,"Y-m-d");
+		
 		$addedfields[] = "`FINAL_PAYMENT_DATE`";
 		$addedvalues[] = "'".$final_paymentdate."'";
 	}
-	
+
 	if ($_POST['principal']!= "") {
 		//Remove the thousand seperator to make value decimal
 		$principal = str_replace(',','',$_POST['principal']);
@@ -89,12 +108,6 @@ if (isset($_POST['add'])){
 		$status = $_POST['status'];
 		$addedfields[] = "`STATUS`";
 		$addedvalues[] = "'".$status."'";
-	}
-	
-	if ($_POST['comment']!= "") {
-		$comment = trim($_POST['comment']);
-		$addedfields[] = "`COMMENT`";
-		$addedvalues[] = "'".$comment."'";
 	}
 	
 		$addedfields[] = "`CustomerNo`";
@@ -158,7 +171,11 @@ if (isset($_POST['edit'])) {
 		$f_prin_int = number_format($editloan_row['FINAL_PRINCIPAL_&_INTEREST']);
 		$comment = strip_tags($editloan_row['COMMENT']);
 		$status = $editloan_row['STATUS'];
-		$cleareddate = date("d-m-Y", strtotime($editloan_row['DATE_CLEARED']));
+		if(is_null($editloan_row['DATE_CLEARED'])){//strtotime function interprets NULL date values as 0 hence creating an invalid date
+			$cleareddate = "";
+		}else{
+			$cleareddate = date("d-m-Y", strtotime($editloan_row['DATE_CLEARED']));
+		}
 		$proInstmts = $editloan_row['PROVISIONAL_INSTALMENTS?'];
 		$clearedby = $editloan_row['CLEARED_BY'];
 		
@@ -207,10 +224,6 @@ if (isset($_POST['edit'])) {
 		$editedfields["FINAL_PRINCIPAL_&_INTEREST"] = str_replace(',','',$_POST['f_prin_int']);
 	}
 	
-	if ($_POST['comment'] != $comment) {
-		$editedfields["COMMENT"] = trim($_POST['comment']);
-	}
-	
 	if ($_POST['status'] != $status) {
 		$editedfields["STATUS"] =  $_POST['status'];
 	}
@@ -233,6 +246,11 @@ if (isset($_POST['edit'])) {
 	if($clearedby != $_POST['clearedby']){
 		$editedfields["CLEARED_BY"] = $_POST['clearedby'];
 	}
+	
+	/*if(mysqli_num_rows($cust_sqlresult)>0){
+		$custrow = mysqli_fetch_assoc($cust_sqlresult);
+		$_SESSION['customer_no'] = $custrow['CustomerNo'];
+	}*/
 		
 	if (count($editedfields) > 0 ) {
 		foreach($editedfields as $fieldname => $value) {

@@ -3,6 +3,10 @@ include "login_session.inc";
 //connect to database
 require "dbconn.php";
 
+if(isset($_REQUEST['id'])){
+	unset($_SESSION['customer_no']);
+	header("Location: customer_details.php");
+}
 //Checks wether user wants to view customer details
 if (!isset($_POST['add']) and !isset($_POST['edit']) and !isset($_POST['image']) and !isset($_POST['document'])) {
 	$_SESSION['customer_no'] = $_REQUEST['customer_no'];
@@ -159,7 +163,7 @@ if (isset($_POST['add'])){
 				$_SESSION['customername'] = $customer_row['SUR_NAME']." ". $customer_row['FIRST_NAME'];										
 				$_SESSION['customer_no'] = $customer_row['CUSTOMER_NO'];
 				$_SESSION['add_customer'] = 1;
-				header ("Location: customer_details.php");
+				header ("Location: customers_page.php");
 			} else {
 				echo "Select Error:".  mysqli_error($conn);
 			}

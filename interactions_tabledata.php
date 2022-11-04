@@ -3,10 +3,7 @@
 require "dbconn.php";
 
 $intrs_sql = mysqli_query($conn, "SELECT * FROM CustomerInteractions WHERE LoanNo=". $_REQUEST['loanNo']. " ORDER BY Interaction_No DESC");
-
-if(mysqli_num_rows($intrs_sql) > 0){
-	
-	echo <<<TABLE
+$tablehead = <<<TABLE
 		<table border="1">
 			<tr>
 				<th>#</th>
@@ -19,9 +16,13 @@ if(mysqli_num_rows($intrs_sql) > 0){
 				<th></th>
 			</tr>
 TABLE;
+
+if(mysqli_num_rows($intrs_sql) > 0){
+	$counter = 1;
+	echo $tablehead;
 	while($intrs_row = mysqli_fetch_assoc($intrs_sql)){
 		echo "<tr>
-				<td>".$intrs_row['Interaction_No']."</td>".
+				<td>$counter</td>".
 				"<td>".date("d/m/Y", strtotime($intrs_row['Date_Occured']))."</td>".
 				"<td>".$intrs_row['Interaction_Type']."</td>".
 				"<td>".$intrs_row['Outcome_Type']."</td>".
@@ -30,13 +31,14 @@ TABLE;
 				"<td>".$intrs_row['Entered_By']."</td>".
 				"<td>Edit</td>".
 			"</tr>";
+		$counter++;
 	}
 	
-	echo "</table>";
-	
 }else{
-	echo "This loan has no interactions yet";
+	echo $tablehead;
+	echo "<tr><td colspan='8' style='text-align: center'>This loan has no interactions yet</td></tr>";
 }
-
+echo "</table>";
+//echo "<button type='button' id='interact'>Add Interaction</button>";
 
 ?>

@@ -21,7 +21,11 @@ body {
 			border-width: 2px;
 			border-bottom: 2px solid #000000;
 			width: 100%;
-			padding-left: 2px;
+			/*padding-left: 2px;*/
+			/*background-image: url("/zero_interest_logo.png");
+			background-repeat: no-repeat;
+			background-size: 20%;
+			padding-bottom: 6.4%*/
 }
 /* Designing the modal */
 
@@ -61,7 +65,7 @@ body {
 	background-color: #292929;
 	position: fixed;
 	z-index: 15;
-	/*top: 14%;*/
+	/*top: 11.5%;*/
 	width: 100%;
 	margin-top: 2.3px;
 	margin-bottom: 4px;
@@ -71,7 +75,7 @@ body {
 .side-bar {
 				height: 100%;/*67%;*/
 				left:0;
-				top: 10.7%;
+				top: 5.9em;
 				position:fixed;
 				width: 15%;
 				background-color: #52B2A0;/*#333;*/
@@ -89,26 +93,35 @@ body {
 }*/
 
 .main_content {
-				position: absolute;
-				left: 15.2%;
-				top: 10.7%;
-				width: 56%;
+				position: relative;
+				
+				top: 5.9em;
+				width: -webkit-fill-available;
 				/*background-color: #52B2A0;*/
-				margin: 1px;
+				margin: auto;
 				padding: 2px;
 				min-height: 100%;
 }
 
 #main_content {
 				position: relative;
-				left: 15.2%;
-				width: 58%;
-				/*background-color: #52B2A0;*/
-				margin: 1px;
-				padding: 2px;
+				box-sizing: border-box;
+				/*left: 15.2%;*/
+				width: -webkit-fill-available;
+				top: 5.9em;
+				background-color: #eeeeee66;
+				margin: 1px 50px;
+				padding: 2px 2px 2px 2px;
 				min-height: 100%;
-				overflow: hidden;
+				border-radius: 5px;
+				/*overflow-y: hidden; --consider for touch device breakpoint*/
 				/*padding-bottom: 44%;*/
+}
+
+#content_container{
+	width: 99%;
+	margin: auto;
+	margin-top: 10px;
 }
 
 #main_content_table {
@@ -126,7 +139,7 @@ body {
 				/*float:top;*/
 				padding: 1px;
 				margin-left: 1px;
-				top: 10.7%;
+				top: 5.5em;
 				/*background-color: #52B2A0;*/
 				width: 20%;
 				overflow-x: none;
@@ -140,10 +153,12 @@ body {
 }
 
 #header>h1 {
-			position: relative;
-			width: 50%;
-			/*background-color: #52B2A0;*/
-			left: 25%;
+			/*position: relative;
+			margin: auto;
+			width: -moz-fit-content;
+			width: fit-content;
+			background-color: #52B2A0;
+			left: 25%;*/
 }
 
 /* Styling loan details_view begining */
@@ -229,6 +244,12 @@ body {
 	padding-bottom: 3px;
 }
 
+#pymt_filt_frm{
+	box-sizing: border-box;
+	padding: 5px;
+	margin-bottom: 20px;
+	
+}
 
 /*#loan-view-form, #left, #right, .instalment-table, .payment-table {
 					/*position: fixed;
@@ -296,7 +317,38 @@ body {
 /*Media queries begins */
 @media only screen and (max-width:1100px){
 	#header>h1 {
-		width: 80%;
-		left: 10%;
+		margin:auto;
+		padding-bottom: 0.2em
+		/*width: 80%;
+		left: 10%;*/
 	}	
+}
+
+@media only screen and (max-width:1200px){
+	#header>h1{
+		font-size: 15px;
+	}
+	
+	#user{
+		display: none;
+	}
+	
+	.side-bar{
+		top: 5em;
+		
+	}
+	
+	#main_content{
+		top: 4em;
+		margin: 5px;
+	}
+	
+	#main_content_table {
+		/*position: absolute;*/
+		left: 17.5%;
+		/*top: 7.5em;*/
+		width: 82.5%;
+		background-color: #52B2A0;
+		
+	}
 }

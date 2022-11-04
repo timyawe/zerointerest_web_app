@@ -2,31 +2,35 @@
 
 //connect to database
 include "dbconn.php";
+$json_post_file = file_get_contents('php://input');
+$json_data = json_decode($json_post_file);
+
+$json_response = new stdClass();
 
 //Checks wether user wants to view payment details
-if (!isset($_POST['add']) and !isset($_POST['edit']) ) {
+if (!isset($json_data->pymt_add) and !isset($json_data->pymt_edit) ) {
 	$_SESSION['paymentID'] = $_REQUEST['payment_ID'];
 	header("Location: payment_form.php");
 }
 
 //Checks wether user has clicked the 'add' button on payment form
-if (isset($_POST['add'])) {
+if (isset($json_data->pymt_add)) {
 	
 	//Change date format for mysql date compatibility
-	$p_date = date("Y-m-d", strtotime($_POST['p_date']));
+	$p_date = date("Y-m-d", strtotime($json_data->p_date));
 	
-	$p_type = $_POST['p_type'];
+	$p_type = $json_data->p_type;
 	
 	//Remove the thousand seperator to make value decimal
-	$p_amount = str_replace(',','',$_POST['p_amount']);
+	$p_amount = str_replace(',','',$json_data->p_amount);
 	
-	if ($_POST['p_confmd'] == "Yes") {
+	if ($json_data->p_confmd == "Yes") {
 		$p_confmd = 1;
 	} else {
 		$p_confmd = 0;
 	}
 	
-	$inst_ID = $_POST['inst_ID'];
+	$inst_ID = $json_data->inst_id;
 	
 	//insert data into database
 	$insertsql = "INSERT INTO `Payment Details` (LOAN_NO, 
@@ -39,9 +43,9 @@ if (isset($_POST['add'])) {
 													'{$p_date}',
 													{$p_amount},
 													'{$p_type}',
-													'{$p_confmd}',
+													{$p_confmd},
 													{$inst_ID})";
-		
+
 		if (mysqli_query($conn, $insertsql)) {
 			//Get last inserted record
 			$lastID = mysqli_insert_id($conn);
@@ -59,23 +63,39 @@ if (isset($_POST['add'])) {
 				$_SESSION['add_payment'] =1;
 				//update loan amount with PAID_AMOUNT value if the payment is confirmed
 				if ($confmd == 1) {
-					$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = AMOUNT_PAID + $amount WHERE LOAN_NO= $loanno";
+					
+					$lnamount_sql = mysqli_query($conn, "SELECT AMOUNT_PAID FROM `Loan Details Table` WHERE LOAN_NO=$loanno");
+					$row = mysqli_fetch_assoc($lnamount_sql);
+					$oldvalue = $row['AMOUNT_PAID'];
+					
+					$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = $oldvalue + $amount WHERE LOAN_NO= $loanno";
 					if (mysqli_query($conn, $loanamountupdatesql)) {
+						
+						$amountdueselectsql = "SELECT AmountDue FROM `Instalments` WHERE Instalment_ID = $inst_ID";
+						$amountdueselectsqlresult = mysqli_query($conn, $amountdueselectsql);
+						$amountduerow = mysqli_fetch_assoc($amountdueselectsqlresult);
+						if ($amountduerow['AmountDue'] == 0 ) {
+							$updt_inst = mysqli_query($conn, "UPDATE `Loan Instalments` SET Instalment_Status = 'Cleared' , Instalment_ClearedDate = '$p_date' WHERE Instalment_ID =$inst_ID");
+							if($updt_inst){
+								$_SESSION['cleared_inst'] = "<p class='alert-response-information'>Alert: Instalment has been cleared .</p>";
+							}else{
+								$_SESSION['cleared_inst'] = mysqli_error($conn);
+							}
+						}
 						$_SESSION['loanamount_updated'] = "Alert: Loan amount has been updated";
 					}
 				}
-				header("Location: payment_form.php");
+				header("Location: instalment_payments.php?instalment_ID=$inst_ID");
 			}
 		} else {
 			$_SESSION['noadd_payment'] = mysqli_error($conn);
 			header("Location: payment_form.php");
-		}
-		
+		}		
 }
 
 
 //Checks wether user has clicked the 'edit' button on payment form
-if (isset($_POST['edit'])) {
+if (isset($json_data->pymt_edit)) {
 	
 	//find the currently edited record
 	$editselectsql = "SELECT * FROM `Payment Details` WHERE PAYMENT_ID =" . $_SESSION['paymentID'];
@@ -93,21 +113,21 @@ if (isset($_POST['edit'])) {
 	$editedfields = array();
 	
 	//checks wether a field was edited and if so adds it to the array 
-	if ($_POST['p_date'] != $p_date) {
+	if ($json_data->p_date != $p_date) {
 		//Change date format for mysql date compatibility
-		$editedfields["PAYMENT_DATE"] = date("Y-m-d", strtotime($_POST['p_date']));
+		$editedfields["PAYMENT_DATE"] = date("Y-m-d", strtotime($json_data->p_date));
 	}
 	
-	if ($_POST['p_amount'] != $p_amount) {
+	if ($json_data->p_amount != $p_amount) {
 		//Remove the thousand seperator to make value decimal
-		$editedfields["PAID_AMOUNT"] = str_replace(',','',$_POST['p_amount']);
+		$editedfields["PAID_AMOUNT"] = str_replace(',','',$json_data->p_amount);
 	}
 	
-	if ($_POST['p_type'] != $p_type) {
-		$editedfields["PAYMENT_TYPE"] = $_POST['p_type'];
+	if ($json_data->p_type != $p_type) {
+		$editedfields["PAYMENT_TYPE"] = $json_data->p_type;
 	}
 	
-	if (isset($_POST['p_confmd']) and $_POST['p_confmd'] == "Yes") {
+	if (isset($json_data->p_confmd) and $json_data->p_confmd == "Yes") {
 			$p_confmd2 = 1;
 		} else {
 			$p_confmd2 = 0;
@@ -150,13 +170,17 @@ if (isset($_POST['edit'])) {
 }
 
 function updateloanamount($confmd, $amount, $loanno,$db_conn) {
+	$lnamount_sql = mysqli_query($db_conn, "SELECT AMOUNT_PAID FROM `Loan Details Table` WHERE LOAN_NO=$loanno");
+	$row = mysqli_fetch_assoc($lnamount_sql);
+	$oldvalue = $row['AMOUNT_PAID'];
+	
 	if ($confmd == 1) {
-		$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = AMOUNT_PAID + $amount WHERE LOAN_NO= $loanno";
+		$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = $oldvalue + $amount WHERE LOAN_NO= $loanno";
 		if (mysqli_query($db_conn, $loanamountupdatesql)) {
 			$_SESSION['loanamount_updated'] = "Alert: Loan amount has been updated";
 		}
 	} else {
-		$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = AMOUNT_PAID - $amount WHERE LOAN_NO= $loanno";
+		$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = $oldvalue - $amount WHERE LOAN_NO= $loanno";
 		if (mysqli_query($db_conn, $loanamountupdatesql)) {
 			$_SESSION['loanamount_updated'] = "Alert: Loan amount has been updated";
 		}
@@ -164,16 +188,20 @@ function updateloanamount($confmd, $amount, $loanno,$db_conn) {
 }
 
 function checkAmountPaid($oldvalue, $newvalue, $loanno, $confmd,$db_conn){
+	$lnamount_sql = mysqli_query($db_conn, "SELECT AMOUNT_PAID FROM `Loan Details Table` WHERE LOAN_NO=$loanno");
+	$row = mysqli_fetch_assoc($lnamount_sql);
+	$loanamnt = $row['AMOUNT_PAID'];
+	
 	if($confmd == 1){
 		if($oldvalue > $newvalue){
-			echo $finalvalue = $oldvalue - $newvalue;
-			$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = AMOUNT_PAID - $finalvalue WHERE LOAN_NO= $loanno";
+			$finalvalue = $oldvalue - $newvalue;
+			$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = $loanamnt - $finalvalue WHERE LOAN_NO= $loanno";
 			if (mysqli_query($db_conn, $loanamountupdatesql)) {
 				$_SESSION['loanamount_updated'] = "Alert: Loan amount has been updated";
 			}
 		}elseif($oldvalue < $newvalue){
-			echo $finalvalue = $newvalue - $oldvalue;
-			$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = AMOUNT_PAID + $finalvalue WHERE LOAN_NO= $loanno";
+			$finalvalue = $newvalue - $oldvalue;
+			$loanamountupdatesql = "UPDATE `Loan Details Table` SET `AMOUNT_PAID` = $loanamnt + $finalvalue WHERE LOAN_NO= $loanno";
 			if (mysqli_query($db_conn, $loanamountupdatesql)) {
 				$_SESSION['loanamount_updated'] = "Alert: Loan amount has been updated";
 			}

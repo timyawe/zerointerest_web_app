@@ -61,8 +61,17 @@ function setPeriod() {
 	}
 	
 	if (provperiod == "" && finalperiod != "") {
-		document.loanform.periodInMonths.value = finalperiod/30 + " month(s)";
+		if(Number.isInteger(finalperiod/30) == false){
+			alert("Please enter period in 30 day range");
+		}else{
+			document.loanform.periodInMonths.value = finalperiod/30 + " month(s)";
+			//const enddate = new Date();
+			//alert(parse(enddate.setDate(enddate.getDate() + finalperiod)));
+			//parse(enddate.setDate(enddate.getDate() + finalperiod));
+			//document.loanform.FinalPaymentDate.value = new Date(enddate.setDate(enddate.getDate() + parseInt(finalperiod)));
+		}
 	}
+	
 }
 
 function checkPeriodInDays() {

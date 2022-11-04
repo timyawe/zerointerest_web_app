@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Cleared Loans</title>
-		<meta name="viewport" content="width=device-width initial-scale=1.0"/>
+		<!--<meta name="viewport" content="width=device-width initial-scale=1.0"/>-->
 		<script src="table_filters.js" type="text/javascript"></script>
 		<link href="heading_styles.css" type="text/css" rel="stylesheet" />
 		<link href="lists_styles.css" type="text/css" rel="stylesheet" />

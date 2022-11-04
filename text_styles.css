@@ -1,3 +1,10 @@
+caption{
+	font-family: "Segoe UI";
+	font-weight: bold;
+	font-size: 1.2em;
+	letter-spacing: 0.1em;
+}
+
 /* Styling for loandetails_view */
 
 		/* Tables */
@@ -76,4 +83,10 @@ h1, h2 {
 .form-error {
 	color: red;
 	font-size: 15px;
+}
+
+/* Styling Reports Page */
+.rep_grp>p {
+	font-family: Calibri;
+	font-size: 1.11em;
 }

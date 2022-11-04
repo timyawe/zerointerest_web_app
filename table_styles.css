@@ -1,9 +1,9 @@
 #table_content {
-				position: absolute;
+				/*position: absolute;
 				top: 22.5%;
 				margin-top: 5px;
 				
-				/*overflow-x: auto;
+				overflow-x: auto;
 				display: block;
 				background-color: red;
 				position: absolute;
@@ -13,7 +13,7 @@
 
 .table_heading {
 				position: fixed;
-				top: 10.7%;
+				top: 3em;
 				z-index: 5;
 				background-color: #ddd;
 				padding: 5px;
@@ -41,6 +41,7 @@
 
 caption {
 	text-align: left;
+	margin-bottom: 4px
 }
 
 table {
@@ -59,12 +60,12 @@ table {
 }
 
 th {
-	height: 5px;
+	height: 30px;
 	font-size: 90%;
 	font-weight: normal;
 	color: white;
 	background-color: #52B2A0;
-	border: 2px solid black;
+	border: 2px solid #ccc;
 	padding: 0px 3px 0px 3px;
 	letter-spacing: 0.15em;
 }
@@ -114,4 +115,34 @@ tr:hover {
 
 .instalment-table, .payment-table {
 	padding-left: 8px;
+}
+
+@media only screen and (max-width:1100px){
+	
+	.table_heading {
+		position: fixed;
+		top: 3em;
+		left: 8.7em;
+		background-color: #ddd;
+		padding: 5px;
+		width: -moz-available;
+		border-bottom: 1px solid #4BB4B9;
+		border-collapse: collapse;
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+	
+	#table_content {
+				/*position: absolute;
+				top: 22.5%;
+				margin-top: 5px;
+				
+				overflow-x: auto;
+				display: block;
+				background-color: red;
+				position: absolute;
+				top: 70%;*/
+				
+				left: 5em;
+}
 }
